@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-xs-12">
+    <form action="">
+      <div class="row">
+        <div class="col-sm-5">
+          <label class="form-label" for="name">Name</label>
+          <input
+            #ingredientName
+            class="form-control"
+            id="name"
+            required
+            type="text"
+          />
+        </div>
+        <div class="col-sm-2">
+          <label class="form-label" for="amount">Amount</label>
+          <input
+            #ingredientAmount
+            class="form-control"
+            id="amount"
+            required
+            type="number"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <button (click)="onAddIng()" class="btn btn-success" type="button">
+            Add
+          </button>
+          <button class="btn btn-danger" type="button">Delete</button>
+          <button class="btn btn-primary" type="button">Clear</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

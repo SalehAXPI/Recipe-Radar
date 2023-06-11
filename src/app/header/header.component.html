@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand">Recipe Book</a>
+    <button
+      (click)="collapsed = !collapsed"
+      class="navbar-toggler dropdown-toggle"
+      type="button"
+    ></button>
+    <div
+      (window:resize)="collapsed = true"
+      [class.collapse]="collapsed"
+      class="navbar-collapse"
+    >
+      <ul class="navbar-nav me-auto nav-pills">
+        <li class="nav-item me-2">
+          <a
+            [routerLink]="['recipes']"
+            class="nav-link"
+            id="recipeNav"
+            routerLinkActive="active"
+            >Recipe</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            [routerLink]="['shopping-list']"
+            class="nav-link"
+            id="shoppingNav"
+            routerLinkActive="active"
+            >Shopping list</a
+          >
+        </li>
+      </ul>
+
+      <ul class="navbar-nav">
+        <li class="dropdown">
+          <button
+            appDropdown
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+          >
+            Manage
+          </button>
+          <ul
+            class="dropdown-menu dropdown-menu-dark right-0"
+            style="margin-top: 7px"
+          >
+            <li><a class="dropdown-item">Save data</a></li>
+            <li><a class="dropdown-item">Fetch data</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

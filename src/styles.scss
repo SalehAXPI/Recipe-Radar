@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import "node_modules/bootstrap/scss/bootstrap";
+
+.row {
+  @extend .row;
+  @extend .py-1;
+}
+
+.right-0 {
+  right: 0
+}
+
+a {
+  cursor: pointer;
+}
