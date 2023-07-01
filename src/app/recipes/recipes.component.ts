@@ -8,7 +8,6 @@ import { RecipeService } from './recipe.service';
   styleUrls: ['./recipes.component.scss'],
 })
 export class RecipesComponent implements OnInit {
-  // @ts-ignore
   selectedRecipe: Recipe;
 
   constructor(private recipeService: RecipeService) {}

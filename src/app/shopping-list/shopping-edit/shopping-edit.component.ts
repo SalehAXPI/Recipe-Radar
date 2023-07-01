@@ -8,9 +8,7 @@ import { ShoppingListService } from '../shopping-list.service';
   styleUrls: ['./shopping-edit.component.scss'],
 })
 export class ShoppingEditComponent {
-  // @ts-ignore
   @ViewChild('ingredientName', { static: true }) ingredientName: ElementRef;
-  // @ts-ignore
   @ViewChild('ingredientAmount', { static: true }) ingredientAmount: ElementRef;
 
   constructor(private shoppingListService: ShoppingListService) {}

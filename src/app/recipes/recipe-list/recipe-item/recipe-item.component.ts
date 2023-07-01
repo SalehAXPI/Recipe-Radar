@@ -9,9 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./recipe-item.component.scss'],
 })
 export class RecipeItemComponent {
-  // @ts-ignore
   @Input() recipe: Recipe;
-  // @ts-ignore
   @Input() recipeId: number;
 
   constructor(private recipeService: RecipeService, private router: Router) {}
