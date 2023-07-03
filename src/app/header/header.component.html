@@ -11,11 +11,11 @@
       [class.collapse]="collapsed"
       class="navbar-collapse"
     >
-      <ul class="navbar-nav me-auto nav-pills">
-        <li class="nav-item me-2">
+      <ul style="column-gap: 7px" class="navbar-nav me-auto nav-pills my-1">
+        <li class="nav-item">
           <a
             [routerLink]="['recipes']"
-            class="nav-link"
+            class="nav-link ps-2"
             id="recipeNav"
             routerLinkActive="active"
             >Recipe</a
@@ -24,7 +24,7 @@
         <li class="nav-item">
           <a
             [routerLink]="['shopping-list']"
-            class="nav-link"
+            class="nav-link ps-2"
             id="shoppingNav"
             routerLinkActive="active"
             >Shopping list</a
