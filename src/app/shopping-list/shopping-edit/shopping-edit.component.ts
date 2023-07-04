@@ -12,9 +12,9 @@ import { Subscription } from 'rxjs';
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   @ViewChild('shoppingForm', { static: false }) shoppingForm: NgForm;
 
-  editMode: boolean = false;
-  subscribe: Subscription;
-  ingIndex: number;
+  public editMode: boolean = false;
+  private subscribe: Subscription;
+  private ingIndex: number;
 
   constructor(private shoppingListService: ShoppingListService) {}
 
@@ -23,32 +23,39 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
       (ingIndex: number) => {
         this.ingIndex = ingIndex;
         this.editMode = true;
-        this.shoppingForm.setValue({
-          name: this.shoppingListService.getIngredients[ingIndex].name,
-          amount: this.shoppingListService.getIngredients[ingIndex].amount,
-        });
+        this.populateForm();
       }
     );
   }
 
+  private populateForm() {
+    const ingredients = this.shoppingListService.getIngredients[this.ingIndex];
+    this.shoppingForm.setValue({
+      name: ingredients.name,
+      amount: ingredients.amount,
+    });
+  }
+
   onSubmit() {
     if (this.editMode) {
-      this.shoppingListService.editIngredient(
-        this.ingIndex,
-        this.shoppingForm.value.name,
-        this.shoppingForm.value.amount
-      );
-      this.editMode = false;
-      this.shoppingForm.reset();
-      return;
+      this.editIngredients();
+    } else {
     }
-    this.shoppingListService.addNewIng(
-      new Ingredient(
-        this.shoppingForm.value.name,
-        Number(this.shoppingForm.value.amount)
-      )
-    );
+    this.resetForm();
+  }
 
+  private editIngredients() {
+    const { name, amount } = this.shoppingForm.value;
+    this.shoppingListService.editIngredient(this.ingIndex, name, amount);
+    this.editMode = false;
+  }
+
+  private addNewIngredient() {
+    const { name, amount } = this.shoppingForm.value;
+    this.shoppingListService.addNewIng(new Ingredient(name, Number(amount)));
+  }
+
+  private resetForm() {
     this.shoppingForm.reset();
   }
 
@@ -58,12 +65,11 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   onCancel() {
     this.editMode = false;
-    this.shoppingForm.reset();
+    this.resetForm();
   }
 
   onDelete() {
     this.shoppingListService.deleteIngredient(this.ingIndex);
-    console.log(this.shoppingListService.getIngredients);
     this.onCancel();
   }
 }
