@@ -30,3 +30,9 @@ textarea.ng-invalid.ng-dirty {
 a {
   cursor: pointer;
 }
+
+.button-group-custom {
+  @extend .gap-1;
+  display: flex;
+
+}

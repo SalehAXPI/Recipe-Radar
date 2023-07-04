@@ -3,18 +3,6 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
       <div class="row">
         <div class="col-sm-12">
-          <button
-            [disabled]="editForm.invalid"
-            type="submit"
-            class="btn btn-success"
-          >
-            Save
-          </button>
-          <button type="submit" class="btn btn-danger">Cancel</button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-12">
           <div>
             <label for="name" class="form-label">Name:</label>
             <input
@@ -51,7 +39,7 @@
           <textarea
             formControlName="desc"
             id="description"
-            rows="10"
+            rows="6"
             class="form-control"
           ></textarea>
         </div>
@@ -75,7 +63,9 @@
                 formControlName="amount"
               />
             </div>
-            <button (click)="onDeleteIng(i)" class="btn btn-danger col-sm-2">X</button>
+            <button (click)="onDeleteIng(i)" class="btn btn-danger col-sm-2">
+              X
+            </button>
           </div>
         </div>
       </div>
@@ -83,6 +73,21 @@
       <button (click)="onAddIngredient()" class="btn btn-success" type="button">
         Add Ingredient
       </button>
+
+      <div class="row">
+        <div class="col-sm-12 button-group-custom justify-content-end">
+          <button
+            [disabled]="editForm.invalid"
+            type="submit"
+            class="btn btn-success"
+          >
+            Save
+          </button>
+          <button (click)="onCancel()" type="button" class="btn btn-danger">
+            Cancel
+          </button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
