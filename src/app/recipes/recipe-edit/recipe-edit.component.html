@@ -4,12 +4,12 @@
       <div class="row">
         <div class="col-sm-12">
           <div>
-            <label for="name" class="form-label">Name:</label>
+            <label class="form-label" for="name">Name:</label>
             <input
-              formControlName="name"
-              type="text"
-              id="name"
               class="form-control"
+              formControlName="name"
+              id="name"
+              type="text"
             />
           </div>
         </div>
@@ -17,13 +17,13 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <label for="imgPath" class="form-label">Image URL:</label>
+          <label class="form-label" for="imgPath">Image URL:</label>
           <input
-            formControlName="imgPath"
-            type="text"
-            id="imgPath"
-            class="form-control"
             #imgPath
+            class="form-control"
+            formControlName="imgPath"
+            id="imgPath"
+            type="text"
           />
         </div>
       </div>
@@ -40,12 +40,12 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <label for="description" class="form-label">Description:</label>
+          <label class="form-label" for="description">Description:</label>
           <textarea
+            class="form-control"
             formControlName="desc"
             id="description"
             rows="6"
-            class="form-control"
           ></textarea>
         </div>
       </div>
@@ -54,21 +54,24 @@
         <div class="col-sm-12" formArrayName="ingredients">
           Ingredients:
           <div
-            class="row"
             *ngFor="let ingredientCont of ingControls; let i = index"
             [formGroupName]="i"
+            class="row"
           >
             <div class="col-sm-8">
-              <input type="text" class="form-control" formControlName="name" />
+              <input class="form-control" formControlName="name" type="text" />
             </div>
             <div class="col-sm-2">
               <input
-                type="number"
                 class="form-control col-sm-auto"
                 formControlName="amount"
+                type="number"
               />
             </div>
-            <button (click)="onDeleteIng(i)" class="btn btn-danger text-dark col-sm-2 fw-bold">
+            <button
+              (click)="onDeleteIng(i)"
+              class="btn btn-danger text-dark col-sm-2 fw-bold"
+            >
               &#10005;
             </button>
           </div>
@@ -83,12 +86,12 @@
         <div class="col-sm-12 button-group-custom justify-content-end">
           <button
             [disabled]="editForm.invalid"
-            type="submit"
             class="btn btn-success"
+            type="submit"
           >
             Save
           </button>
-          <button (click)="onCancel()" type="button" class="btn btn-danger">
+          <button (click)="onCancel()" class="btn btn-danger" type="button">
             Cancel
           </button>
         </div>

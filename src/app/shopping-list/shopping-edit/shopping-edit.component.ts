@@ -31,14 +31,6 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     this.subscribe.unsubscribe();
   }
 
-  private populateForm() {
-    const ingredients = this.shoppingListService.getIngredients[this.ingIndex];
-    this.shoppingForm.setValue({
-      name: ingredients.name,
-      amount: ingredients.amount,
-    });
-  }
-
   onSubmit() {
     const { name, amount } = this.shoppingForm.value;
     if (this.editMode) {
@@ -47,6 +39,24 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
       this.addNewIngredient(name, Number(amount));
     }
     this.resetForm();
+  }
+
+  onCancel() {
+    this.editMode = false;
+    this.resetForm();
+  }
+
+  onDelete() {
+    this.shoppingListService.deleteIngredient(this.ingIndex);
+    this.onCancel();
+  }
+
+  private populateForm() {
+    const ingredients = this.shoppingListService.getIngredients[this.ingIndex];
+    this.shoppingForm.setValue({
+      name: ingredients.name,
+      amount: ingredients.amount,
+    });
   }
 
   private editIngredients(name: string, amount: number) {
@@ -60,15 +70,5 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   private resetForm() {
     this.shoppingForm.reset();
-  }
-
-  onCancel() {
-    this.editMode = false;
-    this.resetForm();
-  }
-
-  onDelete() {
-    this.shoppingListService.deleteIngredient(this.ingIndex);
-    this.onCancel();
   }
 }

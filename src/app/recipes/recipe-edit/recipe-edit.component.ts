@@ -10,8 +10,8 @@ import { RecipeService } from '../recipe.service';
 })
 export class RecipeEditComponent implements OnInit {
   editForm!: FormGroup;
-  private id!: number;
   editMode: boolean = false;
+  private id!: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,6 +27,33 @@ export class RecipeEditComponent implements OnInit {
   ngOnInit() {
     this.initializeForm();
     this.subscribeToRouteParams();
+  }
+
+  onAddIngredient() {
+    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
+    formIngredientsArray.push(this.createIngredientGroup());
+  }
+
+  onSubmit() {
+    if (this.editForm.invalid) return;
+
+    const recipeFormValue = this.editForm.value;
+    if (this.editMode) {
+      this.recipeService.updateRecipe(this.id, recipeFormValue);
+    } else {
+      this.recipeService.addRecipe(recipeFormValue);
+    }
+
+    this.navigateBack();
+  }
+
+  onDeleteIng(index: number) {
+    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
+    formIngredientsArray.removeAt(index);
+  }
+
+  onCancel() {
+    this.navigateBack();
   }
 
   private initializeForm() {
@@ -62,11 +89,6 @@ export class RecipeEditComponent implements OnInit {
     );
   }
 
-  onAddIngredient() {
-    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
-    formIngredientsArray.push(this.createIngredientGroup());
-  }
-
   private createIngredientGroup(
     ing: { name: any; amount: any } = { name: null, amount: null }
   ) {
@@ -77,28 +99,6 @@ export class RecipeEditComponent implements OnInit {
       ],
       amount: [ing.amount, [Validators.required, Validators.min(1)]],
     });
-  }
-
-  onSubmit() {
-    if (this.editForm.invalid) return;
-
-    const recipeFormValue = this.editForm.value;
-    if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, recipeFormValue);
-    } else {
-      this.recipeService.addRecipe(recipeFormValue);
-    }
-
-    this.navigateBack();
-  }
-
-  onDeleteIng(index: number) {
-    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
-    formIngredientsArray.removeAt(index);
-  }
-
-  onCancel() {
-    this.navigateBack();
   }
 
   private navigateBack() {

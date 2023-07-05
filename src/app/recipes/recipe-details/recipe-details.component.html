@@ -1,8 +1,8 @@
 <div class="row">
   <div class="col-xs-12 text-center">
     <img
-      [src]="clickedRecipe.imgPath"
       [alt]="clickedRecipe.name"
+      [src]="clickedRecipe.imgPath"
       class="custom-image"
     />
   </div>
@@ -15,7 +15,7 @@
 <button appDropdown class="btn btn-primary dropdown-toggle" type="button">
   Manage recipe
 </button>
-<ul style="margin-top: 7px" class="dropdown-menu">
+<ul class="dropdown-menu" style="margin-top: 7px">
   <li>
     <a (click)="updateIngredient()" class="dropdown-item"
       >Add Ingredients to Shopping List</a
