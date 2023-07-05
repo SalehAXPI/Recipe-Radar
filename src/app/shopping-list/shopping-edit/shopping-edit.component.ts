@@ -11,8 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   @ViewChild('shoppingForm', { static: false }) shoppingForm: NgForm;
-
-  public editMode: boolean = false;
+  editMode: boolean = false;
   private subscribe: Subscription;
   private ingIndex: number;
 
@@ -21,11 +20,15 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscribe = this.shoppingListService.ingredientsEdited.subscribe(
       (ingIndex: number) => {
-        this.ingIndex = ingIndex;
         this.editMode = true;
+        this.ingIndex = ingIndex;
         this.populateForm();
       }
     );
+  }
+
+  ngOnDestroy() {
+    this.subscribe.unsubscribe();
   }
 
   private populateForm() {
@@ -37,31 +40,26 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    const { name, amount } = this.shoppingForm.value;
     if (this.editMode) {
-      this.editIngredients();
+      this.editIngredients(name, Number(amount));
     } else {
-      this.addNewIngredient();
+      this.addNewIngredient(name, Number(amount));
     }
     this.resetForm();
   }
 
-  private editIngredients() {
-    const { name, amount } = this.shoppingForm.value;
+  private editIngredients(name: string, amount: number) {
     this.shoppingListService.editIngredient(this.ingIndex, name, amount);
     this.editMode = false;
   }
 
-  private addNewIngredient() {
-    const { name, amount } = this.shoppingForm.value;
+  private addNewIngredient(name: string, amount: number) {
     this.shoppingListService.addNewIng(new Ingredient(name, Number(amount)));
   }
 
   private resetForm() {
     this.shoppingForm.reset();
-  }
-
-  ngOnDestroy() {
-    this.subscribe.unsubscribe();
   }
 
   onCancel() {
