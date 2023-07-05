@@ -10,10 +10,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./shopping-edit.component.scss'],
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy {
-  @ViewChild('shoppingForm', { static: false }) shoppingForm: NgForm;
+  @ViewChild('shoppingForm', { static: false }) shoppingForm!: NgForm;
   editMode: boolean = false;
-  private subscribe: Subscription;
-  private ingIndex: number;
+  private subscribe!: Subscription;
+  private ingIndex!: number;
 
   constructor(private shoppingListService: ShoppingListService) {}
 

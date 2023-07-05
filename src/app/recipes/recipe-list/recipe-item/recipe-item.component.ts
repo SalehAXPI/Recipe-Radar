@@ -7,8 +7,8 @@ import { Recipe } from '../../recipe.model';
   styleUrls: ['./recipe-item.component.scss'],
 })
 export class RecipeItemComponent {
-  @Input() recipe: Recipe;
-  @Input() recipeId: number;
+  @Input() recipe!: Recipe;
+  @Input() recipeId!: number;
 
   constructor() {}
 }

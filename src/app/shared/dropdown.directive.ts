@@ -11,7 +11,7 @@ import {
 })
 export class DropdownDirective implements OnInit {
   private shown: boolean = false;
-  private dropDownMenu: HTMLUListElement;
+  private dropDownMenu!: HTMLUListElement;
 
   constructor(private elRef: ElementRef, private renderer: Renderer2) {}
 

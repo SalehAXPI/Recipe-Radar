@@ -9,8 +9,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./shopping-list.component.scss'],
 })
 export class ShoppingListComponent implements OnInit, OnDestroy {
-  ingredients: Ingredient[] = [];
-  private changeSubStat: Subscription;
+  ingredients!: Ingredient[];
+  private changeSubStat!: Subscription;
 
   constructor(private shoppingListService: ShoppingListService) {}
 

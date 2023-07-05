@@ -9,8 +9,8 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-edit.component.scss'],
 })
 export class RecipeEditComponent implements OnInit {
-  editForm: FormGroup;
-  private id: number;
+  editForm!: FormGroup;
+  private id!: number;
   editMode: boolean = false;
 
   constructor(
