@@ -26,11 +26,15 @@ export class RecipeService {
   constructor(private shoppingListService: ShoppingListService) {}
 
   getRecipes() {
-    return this.recipes.slice();
+    // When use spread operator (...) or slice method we are not copying recipes deeply because there are nested objects and array like ingredients and those two methods doesn't copy them and reference to original ones! (So we have to do copying like this)
+    return this.recipes.map((recipe) => ({
+      ...recipe,
+      ingredients: [...recipe.ingredients],
+    }));
   }
 
   getRecipeById(id: number) {
-    return this.recipes.slice()[id];
+    return this.getRecipes()[id];
   }
 
   updateIngredients(ing: Ingredient[]) {
@@ -39,16 +43,20 @@ export class RecipeService {
 
   updateRecipe(index: number, updatedRecipe: Recipe) {
     this.recipes[index] = updatedRecipe;
-    this.recipeChanged.next(this.recipes.slice());
+    this.notifyRecipeUpdated();
   }
 
   addRecipe(recipe: Recipe) {
     this.recipes.push(recipe);
-    this.recipeChanged.next(this.recipes.slice());
+    this.notifyRecipeUpdated();
   }
 
   deleteRecipe(recipeId: number) {
     this.recipes.splice(recipeId, 1);
-    this.recipeChanged.next(this.recipes.slice());
+    this.notifyRecipeUpdated();
+  }
+
+  private notifyRecipeUpdated() {
+    this.recipeChanged.next(this.getRecipes());
   }
 }

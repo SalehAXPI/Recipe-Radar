@@ -9,10 +9,9 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-edit.component.scss'],
 })
 export class RecipeEditComponent implements OnInit {
-  public editForm: FormGroup;
+  editForm: FormGroup;
   private id: number;
-  public editMode: boolean = false;
-  recipeIngredients: FormArray;
+  editMode: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,86 +25,83 @@ export class RecipeEditComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.initializeForm();
+    this.subscribeToRouteParams();
+  }
+
+  private initializeForm() {
+    this.editForm = this.fb.group({
+      name: [null, [Validators.required, Validators.pattern('^(?!\\s*$).+')]],
+      imgPath: [
+        null,
+        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
+      ],
+      desc: [null, [Validators.required, Validators.pattern('^(?!\\s*$).+')]],
+      ingredients: this.fb.array([this.createIngredientGroup()]),
+    });
+  }
+
+  private subscribeToRouteParams() {
     this.route.params.subscribe((param: Params) => {
-      const paramId = param['id'];
-      this.editMode = !!paramId;
-      this.id = +paramId;
+      this.id = +param['id'];
+      this.editMode = !!this.id.toString();
       if (this.editMode) this.fillFormInputs();
-      else {
-        this.editForm = this.fb.group({
-          name: [null, Validators.required],
-          imgPath: [null, Validators.required],
-          desc: [null, Validators.required],
-          ingredients: this.fb.array([
-            this.createIngredientGroup({ name: null, amount: null }),
-          ]),
-        });
-      }
     });
   }
 
   private fillFormInputs() {
     const recipeSelected = this.recipeService.getRecipeById(this.id);
-    if (recipeSelected.ingredients) {
-      this.recipeIngredients = this.fb.array(
-        recipeSelected.ingredients.map((ing) => this.createIngredientGroup(ing))
-      );
-    }
+    this.editForm.patchValue(recipeSelected);
 
-    this.editForm = this.fb.group({
-      name: [
-        recipeSelected.name,
-        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
-      ],
-      imgPath: [
-        recipeSelected.imgPath,
-        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
-      ],
-      desc: [
-        recipeSelected.desc,
-        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
-      ],
-      ingredients:
-        this.recipeIngredients ||
-        this.createIngredientGroup({ name: null, amount: null }),
-    });
-  }
+    const ingredientsArray = recipeSelected.ingredients || [];
+    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
+    formIngredientsArray.clear();
 
-  onAddIngredient() {
-    (this.editForm.get('ingredients') as FormArray).push(
-      this.createIngredientGroup({ name: null, amount: null })
+    ingredientsArray.forEach((ing) =>
+      formIngredientsArray.push(this.createIngredientGroup(ing))
     );
   }
 
-  private createIngredientGroup(ing: { name: any; amount: any }) {
+  onAddIngredient() {
+    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
+    formIngredientsArray.push(this.createIngredientGroup());
+  }
+
+  private createIngredientGroup(
+    ing: { name: any; amount: any } = { name: null, amount: null }
+  ) {
     return this.fb.group({
       name: [
-        ing.name ?? null,
+        ing.name,
         [Validators.required, Validators.pattern('^(?!\\s*$).+')],
       ],
-      amount: [ing.amount ?? null, [Validators.required, Validators.min(1)]],
+      amount: [ing.amount, [Validators.required, Validators.min(1)]],
     });
   }
 
   onSubmit() {
+    if (this.editForm.invalid) return;
+
+    const recipeFormValue = this.editForm.value;
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, this.editForm.value);
+      this.recipeService.updateRecipe(this.id, recipeFormValue);
     } else {
-      this.recipeService.addRecipe(this.editForm.value);
+      this.recipeService.addRecipe(recipeFormValue);
     }
 
     this.navigateBack();
   }
 
-  onDeleteIng(i: number) {
-    (this.editForm.get('ingredients') as FormArray).removeAt(i);
+  onDeleteIng(index: number) {
+    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
+    formIngredientsArray.removeAt(index);
   }
 
   onCancel() {
     this.navigateBack();
   }
 
-  navigateBack() {
-    this.router.navigate(['../'], { relativeTo: this.route }).then((r) => null);
+  private navigateBack() {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 }
