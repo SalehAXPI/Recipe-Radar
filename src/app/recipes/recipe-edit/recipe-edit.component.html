@@ -23,13 +23,18 @@
             type="text"
             id="imgPath"
             class="form-control"
+            #imgPath
           />
         </div>
       </div>
 
       <div class="row">
-        <div class="col-sm-12">
-          <img src="" alt="" class="" />
+        <div class="col-sm-12 text-center">
+          <img
+            [src]="imgPath.value"
+            alt="URL Is Not Correct"
+            class="alert alert-danger custom-image"
+          />
         </div>
       </div>
 

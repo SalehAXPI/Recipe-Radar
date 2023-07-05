@@ -40,7 +40,6 @@ export class RecipeEditComponent implements OnInit {
             this.createIngredientGroup({ name: null, amount: null }),
           ]),
         });
-        console.log((this.editForm.get('ingredients') as FormArray).controls);
       }
     });
   }
@@ -54,9 +53,18 @@ export class RecipeEditComponent implements OnInit {
     }
 
     this.editForm = this.fb.group({
-      name: [recipeSelected.name, Validators.required],
-      imgPath: [recipeSelected.imgPath, Validators.required],
-      desc: [recipeSelected.desc, Validators.required],
+      name: [
+        recipeSelected.name,
+        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
+      ],
+      imgPath: [
+        recipeSelected.imgPath,
+        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
+      ],
+      desc: [
+        recipeSelected.desc,
+        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
+      ],
       ingredients:
         this.recipeIngredients ||
         this.createIngredientGroup({ name: null, amount: null }),
@@ -71,7 +79,10 @@ export class RecipeEditComponent implements OnInit {
 
   private createIngredientGroup(ing: { name: any; amount: any }) {
     return this.fb.group({
-      name: [ing.name ?? null, Validators.required],
+      name: [
+        ing.name ?? null,
+        [Validators.required, Validators.pattern('^(?!\\s*$).+')],
+      ],
       amount: [ing.amount ?? null, [Validators.required, Validators.min(1)]],
     });
   }
@@ -79,10 +90,11 @@ export class RecipeEditComponent implements OnInit {
   onSubmit() {
     if (this.editMode) {
       this.recipeService.updateRecipe(this.id, this.editForm.value);
-      return;
+    } else {
+      this.recipeService.addRecipe(this.editForm.value);
     }
 
-    this.recipeService.addRecipe(this.editForm.value);
+    this.navigateBack();
   }
 
   onDeleteIng(i: number) {
@@ -90,6 +102,10 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['../'], {relativeTo: this.route}).then(r =>null);
+    this.navigateBack();
+  }
+
+  navigateBack() {
+    this.router.navigate(['../'], { relativeTo: this.route }).then((r) => null);
   }
 }

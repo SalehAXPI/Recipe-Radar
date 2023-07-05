@@ -11,7 +11,15 @@
             type="text"
             ngModel
             required
+            pattern=".*\S+.*"
+            #name="ngModel"
           />
+          <div
+            *ngIf="name.invalid && name.dirty"
+            class="alert alert-danger mt-2"
+          >
+            Enter Name Correctly!
+          </div>
         </div>
         <div class="col-sm-2">
           <label class="form-label" for="amount">Amount</label>
@@ -23,16 +31,12 @@
             [min]="1"
             ngModel
             required
+            pattern=".*\S+.*"
             #amount="ngModel"
           />
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-3 col-12">
           <div
-            class="alert alert-danger mb-3"
             *ngIf="amount.invalid && amount.dirty"
+            class="alert alert-danger mt-2"
           >
             Min amount is 1!
           </div>

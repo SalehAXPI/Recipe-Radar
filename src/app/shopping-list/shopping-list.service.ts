@@ -25,7 +25,6 @@ export class ShoppingListService {
   editIngredient(ingEditIndex: number, newName: string, newAmount: number) {
     this.ingredients[ingEditIndex].name = newName;
     this.ingredients[ingEditIndex].amount = newAmount;
-    console.log(this.ingredients);
   }
 
   deleteIngredient(ingIndex: number) {

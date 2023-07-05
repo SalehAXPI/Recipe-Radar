@@ -36,3 +36,10 @@ a {
   display: flex;
 
 }
+
+.custom-image {
+  @extend .figure-img;
+  max-height: 30rem;
+  max-width: 30rem;
+  width: 100%
+}
