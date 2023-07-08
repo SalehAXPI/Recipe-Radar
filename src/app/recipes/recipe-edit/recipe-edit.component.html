@@ -56,12 +56,12 @@
           <div
             *ngFor="let ingredientCont of ingControls; let i = index"
             [formGroupName]="i"
-            class="row"
+            class="row gap-2"
           >
-            <div class="col-sm-8">
+            <div class="col-sm-8 col-12">
               <input class="form-control" formControlName="name" type="text" />
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 col-8">
               <input
                 class="form-control col-sm-auto"
                 formControlName="amount"
@@ -70,7 +70,7 @@
             </div>
             <button
               (click)="onDeleteIng(i)"
-              class="btn btn-danger text-dark col-sm-2 fw-bold"
+              class="btn btn-danger text-dark col-sm-2 col-3 fw-bold"
             >
               &#10005;
             </button>
@@ -82,7 +82,7 @@
         Add Ingredient
       </button>
 
-      <div class="row">
+      <div class="row mt-2">
         <div class="col-sm-12 button-group-custom justify-content-end">
           <button
             [disabled]="editForm.invalid"

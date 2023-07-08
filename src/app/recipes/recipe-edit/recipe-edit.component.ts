@@ -80,7 +80,7 @@ export class RecipeEditComponent implements OnInit {
     const recipeSelected = this.recipeService.getRecipeById(this.id);
     this.editForm.patchValue(recipeSelected);
 
-    const ingredientsArray = recipeSelected.ingredients || [];
+    const ingredientsArray = recipeSelected?.ingredients || [];
     const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
     formIngredientsArray.clear();
 
