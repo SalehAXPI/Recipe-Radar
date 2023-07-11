@@ -41,8 +41,12 @@
             class="dropdown-menu dropdown-menu-dark right-0"
             style="margin-top: 7px"
           >
-            <li><a class="dropdown-item">Save data</a></li>
-            <li><a class="dropdown-item">Fetch data</a></li>
+            <li>
+              <a (click)="onSaveData()" class="dropdown-item">Save data</a>
+            </li>
+            <li>
+              <a (click)="onFetchData()" class="dropdown-item">Fetch data</a>
+            </li>
           </ul>
         </li>
       </ul>

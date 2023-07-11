@@ -8,24 +8,11 @@ import { Subject } from 'rxjs';
 export class RecipeService {
   recipeChanged = new Subject<Recipe[]>();
 
-  private recipes: Recipe[] = [
-    new Recipe(
-      'Tasty Sandwich',
-      'A super tasty sandwich',
-      'https://img.taste.com.au/mOx3fOxf/w720-h480-cfill-q80/taste/2022/09/garlic-chilli-prawn-pasta-181440-1.jpg',
-      [new Ingredient('meat', 1), new Ingredient('French Fries', 2)]
-    ),
-    new Recipe(
-      'Huge Berger',
-      'Tasty huge berger!!',
-      'https://img.taste.com.au/mOx3fOxf/w720-h480-cfill-q80/taste/2022/09/garlic-chilli-prawn-pasta-181440-1.jpg',
-      [new Ingredient('Buns', 2), new Ingredient('Meat', 1)]
-    ),
-  ];
+  private recipes: Recipe[] = [];
 
   constructor(private shoppingListService: ShoppingListService) {}
 
-  getRecipes() {
+  getRecipes(): Recipe[] {
     // When use spread operator (...) or slice method we are not copying recipes deeply because there are nested objects and array like ingredients and those two methods doesn't copy them and reference to original ones! (So we have to do copying like this)
     return this.recipes.map((recipe) => ({
       ...recipe,
@@ -54,6 +41,11 @@ export class RecipeService {
   deleteRecipe(recipeId: number) {
     this.recipes.splice(recipeId, 1);
     this.notifyRecipeUpdated();
+  }
+
+  fetchedData(recipe: Recipe[]) {
+    this.recipes = recipe;
+    this.recipeChanged.next(this.getRecipes());
   }
 
   private notifyRecipeUpdated() {

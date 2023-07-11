@@ -16,6 +16,9 @@ import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.compon
 import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgOptimizedImage } from '@angular/common';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { LoadingComponent } from './loading/loading.component';
+import { LoadingInterceptorService } from './shared/loading-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -30,16 +33,24 @@ import { NgOptimizedImage } from '@angular/common';
     RecipeItemComponent,
     RecipeStartComponent,
     RecipeEditComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,
     RouterOutlet,
     AppRoutingModule,
+    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     NgOptimizedImage,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptorService,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
