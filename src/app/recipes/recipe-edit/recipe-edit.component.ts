@@ -11,7 +11,7 @@ import { RecipeService } from '../recipe.service';
 export class RecipeEditComponent implements OnInit {
   editForm!: FormGroup;
   editMode: boolean = false;
-  private id!: number;
+  private id: number | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,7 +39,7 @@ export class RecipeEditComponent implements OnInit {
 
     const recipeFormValue = this.editForm.value;
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, recipeFormValue);
+      this.recipeService.updateRecipe(this.id! - 1, recipeFormValue);
     } else {
       this.recipeService.addRecipe(recipeFormValue);
     }
@@ -70,14 +70,14 @@ export class RecipeEditComponent implements OnInit {
 
   private subscribeToRouteParams() {
     this.route.params.subscribe((param: Params) => {
-      this.id = +param['id'];
-      this.editMode = !!this.id.toString();
+      this.id = param['id'] ? +param['id'] : undefined;
+      this.editMode = !!this.id;
       if (this.editMode) this.fillFormInputs();
     });
   }
 
   private fillFormInputs() {
-    const recipeSelected = this.recipeService.getRecipeById(this.id);
+    const recipeSelected = this.recipeService.getRecipeById(this.id! - 1);
     this.editForm.patchValue(recipeSelected);
 
     const ingredientsArray = recipeSelected?.ingredients || [];
