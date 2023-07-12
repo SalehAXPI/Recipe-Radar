@@ -19,6 +19,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './loading/loading.component';
 import { LoadingInterceptorService } from './shared/loading-interceptor.service';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { LoadingInterceptorService } from './shared/loading-interceptor.service'
     RecipeStartComponent,
     RecipeEditComponent,
     LoadingComponent,
+    AuthComponent,
   ],
   imports: [
     BrowserModule,
