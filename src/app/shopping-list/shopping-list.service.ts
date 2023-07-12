@@ -15,7 +15,7 @@ export class ShoppingListService {
 
   addNewIng(ing: Ingredient | Ingredient[]) {
     this.ingredients.push(...(Array.isArray(ing) ? ing : [ing]));
-    this.ingredientsChanged.next(this.ingredients.slice());
+    this.ingredientsChanged.next(this.getIngredients);
   }
 
   editIngredientsIndex(i: number) {
@@ -29,6 +29,6 @@ export class ShoppingListService {
 
   deleteIngredient(ingIndex: number) {
     this.ingredients.splice(ingIndex, 1);
-    this.ingredientsChanged.next(this.ingredients.slice());
+    this.ingredientsChanged.next(this.getIngredients);
   }
 }

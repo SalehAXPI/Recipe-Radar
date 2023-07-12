@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Ingredient } from '../../shared/ingredient.model';
 
 @Component({
   selector: 'app-recipe-details',
@@ -26,12 +27,15 @@ export class RecipeDetailsComponent implements OnInit {
   }
 
   updateIngredient() {
-    this.recipeService.updateIngredients(this.clickedRecipe.ingredients);
+    this.recipeService.updateIngredients(
+      this.clickedRecipe.ingredients.map((ing) => {
+        return new Ingredient(ing.name, ing.amount);
+      })
+    );
   }
 
   onEditRecipe() {
-    this.router
-      .navigate(['edit'], { relativeTo: this.route })
+    this.router.navigate(['edit'], { relativeTo: this.route });
   }
 
   onDeleteRecipe() {
