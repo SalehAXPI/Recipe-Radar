@@ -1,3 +1,10 @@
 <div *ngIf="fetching" class="loadingParent">
   <div class="loading"></div>
 </div>
+
+<div class="loadingParent" *ngIf="hasError">
+  <p class="alert alert-danger position-fixed w-100">
+    <span> &#9888; </span>
+    {{ hasError }}
+  </p>
+</div>

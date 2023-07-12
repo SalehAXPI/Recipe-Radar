@@ -4,4 +4,5 @@ import { Subject } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class LoadingService {
   isFetching = new Subject<boolean>();
+  error = new Subject<undefined | string>();
 }

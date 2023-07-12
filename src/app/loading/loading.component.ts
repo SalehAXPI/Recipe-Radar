@@ -8,12 +8,20 @@ import { LoadingService } from '../shared/loading.service';
 })
 export class LoadingComponent implements OnInit {
   fetching: boolean = true;
+  hasError: string | undefined;
 
   constructor(private loadingService: LoadingService) {}
 
   ngOnInit() {
+    this.hasError = undefined;
+
     this.loadingService.isFetching.subscribe((value) => {
       this.fetching = value;
+    });
+
+    this.loadingService.error.subscribe((value) => {
+      this.fetching = false;
+      this.hasError = value;
     });
   }
 }
