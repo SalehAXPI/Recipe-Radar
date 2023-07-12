@@ -1,8 +1,8 @@
 <div class="row">
-  <div class="col-xs-12">
+  <div class="">
     <form #shoppingForm="ngForm" (ngSubmit)="onSubmit()">
       <div class="row">
-        <div class="col-sm-5">
+        <div class="col-lg-5 col-8">
           <label class="form-label" for="name">Name</label>
           <input
             #name="ngModel"
@@ -21,7 +21,7 @@
             Enter Name Correctly!
           </div>
         </div>
-        <div class="col-sm-2">
+        <div class="col-lg-2 col-4">
           <label class="form-label" for="amount">Amount</label>
           <input
             #amount="ngModel"
@@ -44,7 +44,7 @@
       </div>
 
       <div class="row">
-        <div class="col-xs-12 button-group-custom">
+        <div class="button-group-custom">
           <button
             [disabled]="!shoppingForm.valid"
             class="btn btn-success"

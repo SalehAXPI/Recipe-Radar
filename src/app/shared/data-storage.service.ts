@@ -23,6 +23,8 @@ export class DataStorageService {
   }
 
   fetchData() {
+    this.loadingService.error.next(undefined);
+
     const fetchedRecipes = this.http.get<Recipe[]>(
       'https://reciperadar-a2db4-default-rtdb.firebaseio.com/recipes.json'
     );

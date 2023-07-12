@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-xs-12 text-center">
+  <div class="text-center">
     <img
       [alt]="clickedRecipe.name"
       [src]="clickedRecipe.imgPath"
@@ -8,7 +8,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-xs-12">
+  <div>
     <h1 class="h1">{{ clickedRecipe.name }}</h1>
   </div>
 </div>
@@ -26,11 +26,11 @@
 </ul>
 
 <div class="row">
-  <div class="col-xs-12">{{ clickedRecipe.desc }}</div>
+  <div>{{ clickedRecipe.desc }}</div>
 </div>
 
 <div class="row">
-  <div class="col-xs-12">
+  <div>
     <ul class="list-group">
       <li
         *ngFor="let ingredient of clickedRecipe.ingredients"
