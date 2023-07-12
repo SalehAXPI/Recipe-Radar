@@ -2,7 +2,7 @@
   <div class="loading"></div>
 </div>
 
-<div class="loadingParent" *ngIf="hasError">
+<div *ngIf="hasError" class="loadingParent">
   <p class="alert alert-danger position-fixed w-100">
     <span> &#9888; </span>
     {{ hasError }}
