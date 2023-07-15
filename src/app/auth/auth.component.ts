@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoadingService } from '../shared/loading.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -12,21 +13,17 @@ export class AuthComponent implements OnInit {
   authForm!: FormGroup;
   authMode = new BehaviorSubject<'signup' | 'login'>('signup');
   invalidForm: boolean = false;
-  private formData = {
-    email: '',
-    password: '',
-  };
-
   constructor(
+    private fb: FormBuilder,
     private loadingService: LoadingService,
-    private fb: FormBuilder
+    private auhtService: AuthService
   ) {}
 
   ngOnInit() {
     const passwordVal = [
       Validators.required,
       Validators.pattern('[^\\s]+'),
-      Validators.minLength(5),
+      Validators.minLength(6),
     ];
 
     this.authMode.subscribe((typeOfAuth) => {
@@ -41,23 +38,41 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit() {
-    if (
-      this.authForm.get('password')?.invalid ||
-      this.authForm.get('email')?.invalid
-    ) {
+    if (this.authForm.invalid) {
       this.invalidForm = true;
       return;
     }
 
-    this.formData = this.authForm.value;
+    const { email, password } = this.authForm.value;
+    if (this.authMode.getValue() === 'signup') {
+      this.auhtService.signUp(email, password).subscribe({
+        next: (resData) => {
+          console.log(resData);
+        },
+        error: (err) => {
+          this.loadingService.isFetching.next(false);
+          this.loadingService.error.next(err.message);
+        },
+      });
+    } else {
+      this.auhtService.login(email, password).subscribe({
+        next: (resData) => {
+          console.log(resData);
+        },
+        error: (err) => {
+          this.loadingService.isFetching.next(false);
+          this.loadingService.error.next(err.message);
+        },
+      });
+    }
+
     this.invalidForm = false;
     this.authForm.reset();
-
-    console.log(this.formData);
   }
 
   onSwitchMode() {
     this.invalidForm = false;
+    this.loadingService.error.next(undefined)
 
     this.authMode.getValue() === 'signup'
       ? this.authMode.next('login')
