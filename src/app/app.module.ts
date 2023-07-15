@@ -20,6 +20,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LoadingComponent } from './loading/loading.component';
 import { LoadingInterceptorService } from './shared/loading-interceptor.service';
 import { AuthComponent } from './auth/auth.component';
+import { FirstLetterUppercasePipe } from './auth/first-letter-uppercase.pipe';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { AuthComponent } from './auth/auth.component';
     RecipeEditComponent,
     LoadingComponent,
     AuthComponent,
+    FirstLetterUppercasePipe,
   ],
   imports: [
     BrowserModule,

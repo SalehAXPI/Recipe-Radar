@@ -1,29 +1,49 @@
 <div class="row justify-content-center">
   <div class="col-sm-8">
-    <form>
+    <form (ngSubmit)="onSubmit()" [formGroup]="authForm">
       <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" />
-        <div id="emailHelp" class="form-text">
-          We'll never share your email with anyone else.
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <label class="form-label" for="exampleInputEmail1">Email address</label>
         <input
-          type="password"
+          autocomplete="email"
           class="form-control"
-          id="exampleInputPassword1"
+          formControlName="email"
+          id="exampleInputEmail1"
+          type="email"
         />
       </div>
-      <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      <div class="mb-3">
+        <label class="form-label" for="exampleInputPassword1">Password</label>
+        <input
+          autocomplete="password"
+          class="form-control"
+          formControlName="password"
+          id="exampleInputPassword1"
+          type="password"
+        />
+        <p
+          *ngIf="
+            authForm.get('password')?.invalid &&
+            authForm.get('password')?.dirty &&
+            authMode.getValue() === 'signup'
+          "
+          class="form-text"
+        >
+          Your Password Length <strong>Should be More than 5</strong> and Also
+          <strong>Not Contain</strong> Space!
+        </p>
+      </div>
+
+      <div *ngIf="invalidForm" class="alert alert-danger">
+        Please Enter Inputs Correctly!
       </div>
       <div class="row">
         <div class="btn-group col-12 col-lg-4">
-          <button type="submit" class="btn btn-success">Sign In</button>
-          <button type="submit" class="btn btn-primary">Sign Up</button>
+          <button class="btn btn-success" type="submit">
+            {{ authMode.getValue() | firstLetterUppercase }}
+          </button>
+          <button (click)="onSwitchMode()" class="btn btn-dark" type="button">
+            Change to {{ authMode.getValue() === "login" ? "Signup" : "Login" }}
+          </button>
         </div>
       </div>
     </form>
