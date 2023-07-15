@@ -23,8 +23,6 @@ export class AuthComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadingService.isFetching.next(false);
-
     const passwordVal = [
       Validators.required,
       Validators.pattern('[^\\s]+'),
