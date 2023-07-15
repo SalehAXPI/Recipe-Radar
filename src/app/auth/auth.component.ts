@@ -13,6 +13,7 @@ export class AuthComponent implements OnInit {
   authForm!: FormGroup;
   authMode = new BehaviorSubject<'signup' | 'login'>('signup');
   invalidForm: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private loadingService: LoadingService,
@@ -44,35 +45,39 @@ export class AuthComponent implements OnInit {
     }
 
     const { email, password } = this.authForm.value;
-    if (this.authMode.getValue() === 'signup') {
-      this.auhtService.signUp(email, password).subscribe({
-        next: (resData) => {
-          console.log(resData);
-        },
-        error: (err) => {
-          this.loadingService.isFetching.next(false);
-          this.loadingService.error.next(err.message);
-        },
-      });
-    } else {
-      this.auhtService.login(email, password).subscribe({
-        next: (resData) => {
-          console.log(resData);
-        },
-        error: (err) => {
-          this.loadingService.isFetching.next(false);
-          this.loadingService.error.next(err.message);
-        },
-      });
-    }
+    const authAction =
+      this.authMode.getValue() === 'signup'
+        ? this.auhtService.signUp(email, password)
+        : this.auhtService.login(email, password);
 
+    authAction.subscribe({
+      next: (resData) => {
+        console.log(resData);
+      },
+      error: this.handleAuthError,
+      complete: this.handleAuthCompletion,
+    });
+
+    this.resetForm();
+  }
+
+  handleAuthError(err: string) {
+    this.loadingService.isFetching.next(false);
+    this.loadingService.error.next(err);
+  }
+
+  handleAuthCompletion() {
+    this.loadingService.isFetching.next(false);
     this.invalidForm = false;
+  }
+
+  resetForm() {
     this.authForm.reset();
   }
 
   onSwitchMode() {
     this.invalidForm = false;
-    this.loadingService.error.next(undefined)
+    this.loadingService.error.next(undefined);
 
     this.authMode.getValue() === 'signup'
       ? this.authMode.next('login')

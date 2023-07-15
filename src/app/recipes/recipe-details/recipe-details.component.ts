@@ -22,18 +22,21 @@ export class RecipeDetailsComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((param: Params) => {
       this.recipeId = param['id'] ? +param['id'] : null;
-      if (this.recipeService.getRecipes().length !== 0) {
+      this.setClickedRecipe();
+    });
+  }
+
+  setClickedRecipe() {
+    const recipes = this.recipeService.getRecipes();
+    if (recipes.length !== 0) {
+      this.clickedRecipe = this.recipeService.getRecipeById(this.recipeId! - 1);
+    } else {
+      this.recipeService.recipeChanged.subscribe(() => {
         this.clickedRecipe = this.recipeService.getRecipeById(
           this.recipeId! - 1
         );
-      } else {
-        this.recipeService.recipeChanged.subscribe(() => {
-          this.clickedRecipe = this.recipeService.getRecipeById(
-            this.recipeId! - 1
-          );
-        });
-      }
-    });
+      });
+    }
   }
 
   updateIngredient() {

@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 
 interface AuthResponseData {
   idToken: string;
@@ -24,17 +24,7 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(
-        catchError((errorRes) => {
-          switch (errorRes.error.error.message) {
-            case 'EMAIL_EXISTS':
-              return throwError(
-                () => new Error('This Email has already signed up!')
-              );
-          }
-          return throwError(() => new Error('An unknown error occurs!'));
-        })
-      );
+      .pipe(catchError(this.errorHandling));
   }
 
   login(userEmail: string, userPassword: string) {
@@ -47,23 +37,27 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(
-        catchError((errorRes) => {
-          switch (errorRes.error.error.message) {
-            case 'INVALID_PASSWORD':
-              return throwError(
-                () => new Error('Password Is Not Correct, Please Try Again!')
-              );
-              break;
+      .pipe(catchError(this.errorHandling));
+  }
 
-            case 'EMAIL_NOT_FOUND':
-              return throwError(
-                () => new Error('Email Not Found, Please Try Again!')
-              );
-              break;
-          }
-          return throwError(() => new Error('An unknown error occurs!'));
-        })
-      );
+  private errorHandling(errorRes: HttpErrorResponse): Observable<never> {
+    const errorMessage = this.getErrorMessage(errorRes.error.error.message);
+    return throwError(() => errorMessage);
+  }
+
+  private getErrorMessage(erroMessage: string): string {
+    switch (erroMessage) {
+      case 'INVALID_PASSWORD':
+        return 'Password Is Not Correct, Please Try Again!';
+
+      case 'EMAIL_NOT_FOUND':
+        return 'Email Not Found, Please Try Again!';
+
+      case 'EMAIL_EXISTS':
+        return 'This Email has already signed up!';
+
+      default:
+        return 'An unknown error occurs!';
+    }
   }
 }
