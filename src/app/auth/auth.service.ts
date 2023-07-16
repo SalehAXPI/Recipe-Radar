@@ -1,29 +1,17 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, Subject, tap, throwError } from 'rxjs';
-import {
-  LoginUserResponse,
-  LoginUserResponseNeededData,
-  User,
-} from './user.model';
-
-interface AuthResponseData {
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-}
+import { LoginUserResponse, SignupUserResponse, User } from './user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  logedUser = new Subject<User>();
+  loggedUser = new Subject<User>();
 
   constructor(private http: HttpClient) {}
 
   signUp(newUserEmail: string, newUserPassword: string) {
     return this.http
-      .post<AuthResponseData>(
+      .post<SignupUserResponse>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAv1FPE9fkMSVOaD935MOYVu8NrEWytsa0',
         {
           email: newUserEmail,
@@ -31,7 +19,12 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError((err) => this.errorHandling(err)));
+      .pipe(
+        tap((responseData: SignupUserResponse) =>
+          this.handleAuth(responseData)
+        ),
+        catchError((err) => this.errorHandling(err))
+      );
   }
 
   login(userEmail: string, userPassword: string) {
@@ -50,8 +43,8 @@ export class AuthService {
       );
   }
 
-  private handleAuth(responseData: LoginUserResponse) {
-    const expiritionDate = new Date(
+  private handleAuth(responseData: LoginUserResponse | SignupUserResponse) {
+    const expirationDate = new Date(
       new Date().getTime() + +responseData.expiresIn * 1000
     );
 
@@ -59,10 +52,10 @@ export class AuthService {
       responseData.email,
       responseData.localId,
       responseData.idToken,
-      expiritionDate
+      expirationDate
     );
 
-    this.logedUser.next(user);
+    this.loggedUser.next(user);
   }
 
   private errorHandling(errorRes: HttpErrorResponse): Observable<never> {

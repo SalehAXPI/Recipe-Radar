@@ -3,6 +3,7 @@ import { LoadingService } from '../shared/loading.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -17,13 +18,14 @@ export class AuthComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private loadingService: LoadingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.authService.logedUser.subscribe({
-      next: (resData) => {
-        console.log('User Logged With this informotion!', resData);
+    this.authService.loggedUser.subscribe({
+      next: () => {
+        this.router.navigate(['/recipes']).then((r) => r);
       },
     });
 
