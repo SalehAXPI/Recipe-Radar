@@ -54,8 +54,12 @@ export class AuthComponent implements OnInit {
       next: (resData) => {
         console.log(resData);
       },
-      error: this.handleAuthError,
-      complete: this.handleAuthCompletion,
+      error: (err) => {
+        this.handleAuthError(err);
+      },
+      complete: () => {
+        this.handleAuthCompletion();
+      },
     });
 
     this.resetForm();
