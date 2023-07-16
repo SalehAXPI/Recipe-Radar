@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 interface AuthResponseData {
   idToken: string;
@@ -24,7 +24,7 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.errorHandling));
+      .pipe(catchError((err) => this.errorHandling(err)));
   }
 
   login(userEmail: string, userPassword: string) {
@@ -37,7 +37,7 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.errorHandling));
+      .pipe(catchError((err) => this.errorHandling(err)));
   }
 
   private errorHandling(errorRes: HttpErrorResponse): Observable<never> {
@@ -45,8 +45,8 @@ export class AuthService {
     return throwError(() => errorMessage);
   }
 
-  private getErrorMessage(erroMessage: string): string {
-    switch (erroMessage) {
+  private getErrorMessage(errorMessage: string): string {
+    switch (errorMessage) {
       case 'INVALID_PASSWORD':
         return 'Password Is Not Correct, Please Try Again!';
 
