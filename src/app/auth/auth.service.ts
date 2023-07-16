@@ -41,7 +41,9 @@ export class AuthService {
   }
 
   private errorHandling(errorRes: HttpErrorResponse): Observable<never> {
-    const errorMessage = this.getErrorMessage(errorRes.error.error.message);
+    debugger;
+    const errorMessage = this.getErrorMessage(errorRes.error?.error?.message);
+    debugger;
     return throwError(() => errorMessage);
   }
 
@@ -55,6 +57,9 @@ export class AuthService {
 
       case 'EMAIL_EXISTS':
         return 'This Email has already signed up!';
+
+      case 'INVALID_EMAIL':
+        return "Email Isn't Valid, Please Try With Another Email!";
 
       default:
         return 'An unknown error occurs!';

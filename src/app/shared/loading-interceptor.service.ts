@@ -17,6 +17,7 @@ export class LoadingInterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    this.loadingService.error.next(undefined);
     this.loadingService.isFetching.next(true);
 
     return next.handle(req).pipe(

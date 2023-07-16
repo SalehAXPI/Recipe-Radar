@@ -11,13 +11,13 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent implements OnInit {
   authForm!: FormGroup;
-  authMode = new BehaviorSubject<'signup' | 'login'>('signup');
+  authMode = new BehaviorSubject<'signup' | 'login'>('login');
   invalidForm: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private loadingService: LoadingService,
-    private auhtService: AuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -44,17 +44,19 @@ export class AuthComponent implements OnInit {
       return;
     }
 
+    this.invalidForm = false;
+
     const { email, password } = this.authForm.value;
     const authAction =
       this.authMode.getValue() === 'signup'
-        ? this.auhtService.signUp(email, password)
-        : this.auhtService.login(email, password);
+        ? this.authService.signUp(email, password)
+        : this.authService.login(email, password);
 
     authAction.subscribe({
       next: (resData) => {
         console.log(resData);
       },
-      error: (err) => {
+      error: (err: string) => {
         this.handleAuthError(err);
       },
       complete: () => {
