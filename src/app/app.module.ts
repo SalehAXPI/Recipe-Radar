@@ -17,7 +17,7 @@ import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgOptimizedImage } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { LoadingComponent } from './loading/loading.component';
+import { LoadingComponent } from './shared/loading/loading.component';
 import { LoadingInterceptorService } from './shared/loading-interceptor.service';
 import { AuthComponent } from './auth/auth.component';
 import { FirstLetterUppercasePipe } from './auth/first-letter-uppercase.pipe';
