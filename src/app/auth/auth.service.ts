@@ -1,6 +1,11 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, Subject, tap, throwError } from 'rxjs';
+import {
+  LoginUserResponse,
+  LoginUserResponseNeededData,
+  User,
+} from './user.model';
 
 interface AuthResponseData {
   idToken: string;
@@ -12,6 +17,8 @@ interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  logedUser = new Subject<User>();
+
   constructor(private http: HttpClient) {}
 
   signUp(newUserEmail: string, newUserPassword: string) {
@@ -29,7 +36,7 @@ export class AuthService {
 
   login(userEmail: string, userPassword: string) {
     return this.http
-      .post(
+      .post<LoginUserResponse>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAv1FPE9fkMSVOaD935MOYVu8NrEWytsa0',
         {
           email: userEmail,
@@ -37,13 +44,29 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError((err) => this.errorHandling(err)));
+      .pipe(
+        tap((responseData: LoginUserResponse) => this.handleAuth(responseData)),
+        catchError((err) => this.errorHandling(err))
+      );
+  }
+
+  private handleAuth(responseData: LoginUserResponse) {
+    const expiritionDate = new Date(
+      new Date().getTime() + +responseData.expiresIn * 1000
+    );
+
+    const user = new User(
+      responseData.email,
+      responseData.localId,
+      responseData.idToken,
+      expiritionDate
+    );
+
+    this.logedUser.next(user);
   }
 
   private errorHandling(errorRes: HttpErrorResponse): Observable<never> {
-    debugger;
     const errorMessage = this.getErrorMessage(errorRes.error?.error?.message);
-    debugger;
     return throwError(() => errorMessage);
   }
 

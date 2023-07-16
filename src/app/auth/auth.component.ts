@@ -21,6 +21,12 @@ export class AuthComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.authService.logedUser.subscribe({
+      next: (resData) => {
+        console.log('User Logged With this informotion!', resData);
+      },
+    });
+
     const passwordVal = [
       Validators.required,
       Validators.pattern('[^\\s]+'),
