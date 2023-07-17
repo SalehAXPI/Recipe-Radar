@@ -8,7 +8,7 @@
 
 
 input.ng-invalid.ng-dirty,
-textarea.ng-invalid {
+textarea.ng-invalid.ng-dirty {
   @extend .border-danger;
 }
 
