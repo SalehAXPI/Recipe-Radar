@@ -51,4 +51,9 @@ export class RecipeService {
   private notifyRecipeUpdated() {
     this.recipeChanged.next(this.getRecipes());
   }
+
+  onLogout() {
+    this.recipes = [];
+    this.recipeChanged.next(this.getRecipes());
+  }
 }

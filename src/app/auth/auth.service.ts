@@ -2,12 +2,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { LoginUserResponse, SignupUserResponse, User } from './user.model';
+import { RecipeService } from '../recipes/recipe.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   loggedUser = new BehaviorSubject<User | undefined>(undefined);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private recipeService: RecipeService) {}
 
   signUp(newUserEmail: string, newUserPassword: string) {
     return this.http
@@ -80,5 +81,10 @@ export class AuthService {
       default:
         return 'An unknown error occurs!';
     }
+  }
+
+  onLogout() {
+    this.loggedUser.next(undefined);
+    this.recipeService.onLogout();
   }
 }
