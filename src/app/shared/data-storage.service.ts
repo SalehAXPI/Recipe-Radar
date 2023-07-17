@@ -3,28 +3,44 @@ import { HttpClient } from '@angular/common/http';
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
 import { LoadingService } from './loading.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
   constructor(
     private http: HttpClient,
     private recipeService: RecipeService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private authService: AuthService
   ) {}
 
   saveData() {
+    const authToken = this.authService.loggedUser.getValue()?.token;
+    console.log('SaveData Token!');
+
     const recipes = this.recipeService.getRecipes();
     this.http
       .put(
         'https://reciperadar-a2db4-default-rtdb.firebaseio.com/recipes.json',
-        recipes
+        recipes,
+        authToken
+          ? {
+              params: { auth: authToken },
+            }
+          : {}
       )
       .subscribe((recipes) => console.log(recipes));
   }
 
   fetchData() {
+    const authToken = this.authService.loggedUser.getValue()?.token;
     const fetchedRecipes = this.http.get<Recipe[]>(
-      'https://reciperadar-a2db4-default-rtdb.firebaseio.com/recipes.json'
+      'https://reciperadar-a2db4-default-rtdb.firebaseio.com/recipes.json',
+      authToken
+        ? {
+            params: { auth: authToken },
+          }
+        : {}
     );
 
     fetchedRecipes.subscribe({

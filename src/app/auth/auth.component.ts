@@ -24,8 +24,10 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
     this.authService.loggedUser.subscribe({
-      next: () => {
-        this.router.navigate(['/recipes']).then((r) => r);
+      next: (val) => {
+        val
+          ? this.router.navigate(['/recipes'])
+          : this.router.navigate(['/auth']);
       },
     });
 
