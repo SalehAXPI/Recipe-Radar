@@ -24,25 +24,31 @@
             >Shopping list</a
           >
         </li>
-        <li class="nav-item">
+        <li *ngIf="!loggedIn" class="nav-item">
           <a
             [routerLink]="['auth']"
             class="nav-link ps-2"
             routerLinkActive="active"
-            >Signup/Login</a
+          >Signup/Login</a
           >
         </li>
       </ul>
 
       <ul class="navbar-nav">
-        <li class="dropdown">
+        <li *ngIf="loggedIn">
+          <a style="padding-top: 6px" class="nav-link ps-2">Logout</a>
+        </li>
+
+        <li [routerLink]="[loggedIn ? null : '/auth']" class="dropdown">
           <button
+            [disabled]="!loggedIn"
             appDropdown
             class="btn btn-secondary dropdown-toggle"
             type="button"
           >
             Manage
           </button>
+
           <ul
             class="dropdown-menu dropdown-menu-dark right-0"
             style="margin-top: 7px"
