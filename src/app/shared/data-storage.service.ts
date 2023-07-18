@@ -7,6 +7,7 @@ import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
+  // TODO Try using interceptors to add token in every outgoing request instead of this
   constructor(
     private http: HttpClient,
     private recipeService: RecipeService,

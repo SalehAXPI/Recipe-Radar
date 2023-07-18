@@ -39,7 +39,7 @@
           <a (click)="onLogout()" style="padding-top: 6px" class="nav-link ps-2">Logout</a>
         </li>
 
-        <li [routerLink]="[loggedIn ? null : '/auth']" class="dropdown">
+        <li (click)="onManageClick()" class="dropdown">
           <button
             [disabled]="!loggedIn"
             appDropdown

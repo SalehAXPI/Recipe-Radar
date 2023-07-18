@@ -16,8 +16,8 @@ export class RecipeEditComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private recipeService: RecipeService,
-    private router: Router
+    private router: Router,
+    private recipeService: RecipeService
   ) {}
 
   get ingControls() {
