@@ -1,7 +1,12 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
-import { LoginUserResponse, SignupUserResponse, User } from './user.model';
+import {
+  LoginUserResponse,
+  SignupUserResponse,
+  User,
+  userResponseNeededData,
+} from './user.model';
 import { RecipeService } from '../recipes/recipe.service';
 
 @Injectable({ providedIn: 'root' })
@@ -45,6 +50,21 @@ export class AuthService {
       );
   }
 
+  autoLogin() {
+    const userData = localStorage.getItem('userData');
+    if (!userData) return;
+
+    const parsedUserData = JSON.parse(userData) as userResponseNeededData;
+    const loadedUser = new User(
+      parsedUserData.email,
+      parsedUserData.id,
+      parsedUserData._token,
+      parsedUserData._tokenExpirationDate
+    );
+
+    if (loadedUser.token) this.loggedUser.next(loadedUser);
+  }
+
   private handleAuth(responseData: LoginUserResponse | SignupUserResponse) {
     const expirationDate = new Date(
       new Date().getTime() + +responseData.expiresIn * 1000
@@ -58,6 +78,7 @@ export class AuthService {
     );
 
     this.loggedUser.next(user);
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   private errorHandling(errorRes: HttpErrorResponse): Observable<never> {
@@ -87,5 +108,6 @@ export class AuthService {
   onLogout() {
     this.loggedUser.next(undefined);
     this.recipeService.onLogout();
+    localStorage.removeItem('userData');
   }
 }
