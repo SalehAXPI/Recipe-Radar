@@ -13,6 +13,7 @@ import { RecipeService } from '../recipes/recipe.service';
 export class AuthService {
   loggedUser = new BehaviorSubject<User | undefined>(undefined);
   private API_KEY = 'AIzaSyAv1FPE9fkMSVOaD935MOYVu8NrEWytsa0';
+  private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient, private recipeService: RecipeService) {}
 
@@ -59,10 +60,17 @@ export class AuthService {
       parsedUserData.email,
       parsedUserData.id,
       parsedUserData._token,
-      parsedUserData._tokenExpirationDate
+      new Date(parsedUserData._tokenExpirationDate)
     );
 
-    if (loadedUser.token) this.loggedUser.next(loadedUser);
+    if (loadedUser.token) {
+      this.loggedUser.next(loadedUser);
+
+      const exp =
+        loadedUser._tokenExpirationDate.getTime() - new Date().getTime();
+
+      this.autoLogout(exp);
+    }
   }
 
   private handleAuth(responseData: LoginUserResponse | SignupUserResponse) {
@@ -78,6 +86,7 @@ export class AuthService {
     );
 
     this.loggedUser.next(user);
+    this.autoLogout(+responseData.expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
@@ -107,7 +116,15 @@ export class AuthService {
 
   onLogout() {
     this.loggedUser.next(undefined);
-    this.recipeService.onLogout();
     localStorage.removeItem('userData');
+    this.recipeService.onLogout();
+    if (this.tokenExpirationTimer) clearTimeout(this.tokenExpirationTimer);
+    this.tokenExpirationTimer = null;
+  }
+
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.onLogout();
+    }, expirationDuration);
   }
 }
