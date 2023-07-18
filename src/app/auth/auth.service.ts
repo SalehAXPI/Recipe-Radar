@@ -71,6 +71,8 @@ export class AuthService {
 
       this.autoLogout(exp);
     }
+
+    console.log('AUTO LOGGED IN!');
   }
 
   private handleAuth(responseData: LoginUserResponse | SignupUserResponse) {

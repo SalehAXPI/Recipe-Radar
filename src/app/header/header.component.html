@@ -8,12 +8,20 @@
     ></button>
     <div [class.collapse]="collapsed" class="navbar-collapse">
       <ul class="navbar-nav me-auto nav-pills my-1" style="column-gap: 7px">
-        <li class="nav-item">
+        <li *ngIf="!loggedIn" class="nav-item">
+          <a
+            [routerLink]="['auth']"
+            class="nav-link ps-2"
+            routerLinkActive="active"
+          >Auth</a
+          >
+        </li>
+        <li *ngIf="loggedIn" class="nav-item">
           <a
             [routerLink]="['recipes']"
             class="nav-link ps-2"
             routerLinkActive="active"
-            >Recipe</a
+          >Recipe</a
           >
         </li>
         <li class="nav-item">
@@ -24,19 +32,13 @@
             >Shopping list</a
           >
         </li>
-        <li *ngIf="!loggedIn" class="nav-item">
-          <a
-            [routerLink]="['auth']"
-            class="nav-link ps-2"
-            routerLinkActive="active"
-          >Signup/Login</a
-          >
-        </li>
       </ul>
 
       <ul class="navbar-nav">
         <li *ngIf="loggedIn">
-          <a (click)="onLogout()" style="padding-top: 6px" class="nav-link ps-2">Logout</a>
+          <a (click)="onLogout()" style="padding-top: 6px" class="nav-link ps-2"
+          >Logout</a
+          >
         </li>
 
         <li (click)="onManageClick()" class="dropdown">
