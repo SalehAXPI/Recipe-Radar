@@ -31,10 +31,12 @@ export class RecipeDetailsComponent implements OnInit {
     if (recipes.length !== 0) {
       this.clickedRecipe = this.recipeService.getRecipeById(this.recipeId! - 1);
     } else {
-      this.recipeService.recipeChanged.subscribe(() => {
-        this.clickedRecipe = this.recipeService.getRecipeById(
-          this.recipeId! - 1
-        );
+      this.recipeService.recipeChanged.subscribe((recipe) => {
+        if (recipe[this.recipeId! - 1])
+          this.clickedRecipe = this.recipeService.getRecipeById(
+            this.recipeId! - 1
+          );
+        else this.router.navigate(['recipes']);
       });
     }
   }
