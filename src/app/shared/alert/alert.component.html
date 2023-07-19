@@ -1,0 +1,8 @@
+<div
+  *ngIf="hasError"
+  class="alert alert-danger alert-dismissible alert-modal"
+  style="width: fit-content"
+>
+  <div class="me-2">{{ hasError }}</div>
+  <button type="button" class="btn-close" (click)="onClose()"></button>
+</div>

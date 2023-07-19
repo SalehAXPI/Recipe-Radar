@@ -22,6 +22,7 @@ import { LoadingInterceptorService } from './shared/loading-interceptor.service'
 import { AuthComponent } from './auth/auth.component';
 import { FirstLetterUppercasePipe } from './auth/first-letter-uppercase.pipe';
 import { ShortenStrPipe } from './recipes/recipe-list/recipe-item/shorten-str.pipe';
+import { AlertComponent } from './shared/alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ShortenStrPipe } from './recipes/recipe-list/recipe-item/shorten-str.pi
     AuthComponent,
     FirstLetterUppercasePipe,
     ShortenStrPipe,
+    AlertComponent,
   ],
   imports: [
     BrowserModule,
