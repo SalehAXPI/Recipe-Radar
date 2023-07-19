@@ -8,11 +8,11 @@ import {
   userResponseNeededData,
 } from './user.model';
 import { RecipeService } from '../recipes/recipe.service';
+import { environment } from '../../environments/environment.development';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   loggedUser = new BehaviorSubject<User | undefined>(undefined);
-  private API_KEY = 'AIzaSyAv1FPE9fkMSVOaD935MOYVu8NrEWytsa0';
   private tokenExpirationTimer: any;
 
   constructor(private http: HttpClient, private recipeService: RecipeService) {}
@@ -20,7 +20,7 @@ export class AuthService {
   signUp(newUserEmail: string, newUserPassword: string) {
     return this.http
       .post<SignupUserResponse>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.API_KEY}`,
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`,
         {
           email: newUserEmail,
           password: newUserPassword,
@@ -38,7 +38,7 @@ export class AuthService {
   login(userEmail: string, userPassword: string) {
     return this.http
       .post<LoginUserResponse>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.API_KEY}`,
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
         {
           email: userEmail,
           password: userPassword,

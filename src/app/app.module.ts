@@ -4,53 +4,22 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
-import { RecipesComponent } from './recipes/recipes.component';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
-import { DropdownDirective } from './shared/dropdown.directive';
-import { RouterOutlet } from '@angular/router';
-import { RecipeDetailsComponent } from './recipes/recipe-details/recipe-details.component';
-import { RecipeListComponent } from './recipes/recipe-list/recipe-list.component';
-import { RecipeItemComponent } from './recipes/recipe-list/recipe-item/recipe-item.component';
-import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
-import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgOptimizedImage } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { LoadingComponent } from './shared/loading/loading.component';
 import { LoadingInterceptorService } from './shared/loading-interceptor.service';
-import { AuthComponent } from './auth/auth.component';
-import { FirstLetterUppercasePipe } from './auth/first-letter-uppercase.pipe';
-import { ShortenStrPipe } from './recipes/recipe-list/recipe-item/shorten-str.pipe';
-import { AlertComponent } from './shared/alert/alert.component';
+import { ShoppingListModule } from './shopping-list/shopping-list.module';
+import { SharedModule } from './shared/shared.module';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    RecipesComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
-    DropdownDirective,
-    RecipeDetailsComponent,
-    RecipeListComponent,
-    RecipeItemComponent,
-    RecipeStartComponent,
-    RecipeEditComponent,
-    LoadingComponent,
-    AuthComponent,
-    FirstLetterUppercasePipe,
-    ShortenStrPipe,
-    AlertComponent,
-  ],
+  declarations: [AppComponent, HeaderComponent],
+  // Order in routing imports is important
   imports: [
     BrowserModule,
-    RouterOutlet,
+    ShoppingListModule,
+    AuthModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgOptimizedImage,
+    SharedModule,
   ],
   providers: [
     {
