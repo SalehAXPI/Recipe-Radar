@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Ingredient } from '../../shared/ingredient.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-details',
   templateUrl: './recipe-details.component.html',
   styleUrls: ['./recipe-details.component.scss'],
 })
-export class RecipeDetailsComponent implements OnInit {
+export class RecipeDetailsComponent implements OnInit, OnDestroy {
   clickedRecipe: Recipe = {} as Recipe;
   recipeId!: number | null;
+  private subscription!: Subscription;
 
   constructor(
     private recipeService: RecipeService,
@@ -28,17 +30,16 @@ export class RecipeDetailsComponent implements OnInit {
 
   setClickedRecipe() {
     const recipes = this.recipeService.getRecipes();
-    if (recipes.length !== 0) {
-      this.clickedRecipe = this.recipeService.getRecipeById(this.recipeId! - 1);
+    if (!recipes[this.recipeId! - 1]) {
+      this.router.navigate(['recipes']);
+      return;
     } else {
-      this.recipeService.recipeChanged.subscribe((recipe) => {
-        if (recipe[this.recipeId! - 1])
-          this.clickedRecipe = this.recipeService.getRecipeById(
-            this.recipeId! - 1
-          );
-        else this.router.navigate(['recipes']);
-      });
+      this.clickedRecipe = recipes[this.recipeId! - 1];
     }
+
+    this.subscription = this.recipeService.recipeChanged.subscribe((recipe) => {
+      this.clickedRecipe = recipe[this.recipeId! - 1];
+    });
   }
 
   updateIngredient() {
@@ -56,5 +57,9 @@ export class RecipeDetailsComponent implements OnInit {
   onDeleteRecipe() {
     this.recipeService.deleteRecipe(this.recipeId! - 1);
     this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
