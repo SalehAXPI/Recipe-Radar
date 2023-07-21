@@ -48,12 +48,12 @@ export class RecipeService {
     this.recipeChanged.next(this.getRecipes());
   }
 
-  private notifyRecipeUpdated() {
+  onLogout() {
+    this.recipes = [];
     this.recipeChanged.next(this.getRecipes());
   }
 
-  onLogout() {
-    this.recipes = [];
+  private notifyRecipeUpdated() {
     this.recipeChanged.next(this.getRecipes());
   }
 }

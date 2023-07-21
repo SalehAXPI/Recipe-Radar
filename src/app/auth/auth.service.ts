@@ -75,6 +75,20 @@ export class AuthService {
     console.log('AUTO LOGGED IN!');
   }
 
+  onLogout() {
+    this.loggedUser.next(undefined);
+    localStorage.removeItem('userData');
+    this.recipeService.onLogout();
+    if (this.tokenExpirationTimer) clearTimeout(this.tokenExpirationTimer);
+    this.tokenExpirationTimer = null;
+  }
+
+  autoLogout(expirationDuration: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.onLogout();
+    }, expirationDuration);
+  }
+
   private handleAuth(responseData: LoginUserResponse | SignupUserResponse) {
     const expirationDate = new Date(
       new Date().getTime() + +responseData.expiresIn * 1000
@@ -114,19 +128,5 @@ export class AuthService {
       default:
         return 'An unknown error occurs!';
     }
-  }
-
-  onLogout() {
-    this.loggedUser.next(undefined);
-    localStorage.removeItem('userData');
-    this.recipeService.onLogout();
-    if (this.tokenExpirationTimer) clearTimeout(this.tokenExpirationTimer);
-    this.tokenExpirationTimer = null;
-  }
-
-  autoLogout(expirationDuration: number) {
-    this.tokenExpirationTimer = setTimeout(() => {
-      this.onLogout();
-    }, expirationDuration);
   }
 }
