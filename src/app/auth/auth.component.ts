@@ -1,11 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingService } from '../shared/loading.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
 
 @Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, FirstLetterUppercasePipe, CommonModule],
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],

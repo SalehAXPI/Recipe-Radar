@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { DataStorageService } from '../shared/data-storage.service';
 import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { DropdownDirective } from '../shared/dropdown.directive';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, RouterModule, DropdownDirective],
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],

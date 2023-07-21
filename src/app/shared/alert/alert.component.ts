@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingService } from '../loading.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule],
   selector: 'app-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],

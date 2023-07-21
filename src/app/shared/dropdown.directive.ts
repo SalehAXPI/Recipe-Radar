@@ -6,9 +6,7 @@ import {
   Renderer2,
 } from '@angular/core';
 
-@Directive({
-  selector: '[appDropdown]',
-})
+@Directive({ standalone: true, selector: '[appDropdown]' })
 export class DropdownDirective implements OnInit {
   private shown: boolean = false;
   private dropDownMenu!: HTMLUListElement;

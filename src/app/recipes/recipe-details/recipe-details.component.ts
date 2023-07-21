@@ -4,8 +4,12 @@ import { RecipeService } from '../recipe.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Ingredient } from '../../shared/ingredient.model';
 import { Subscription } from 'rxjs';
+import { DropdownDirective } from '../../shared/dropdown.directive';
+import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
+  imports: [DropdownDirective, CommonModule],
   selector: 'app-recipe-details',
   templateUrl: './recipe-details.component.html',
   styleUrls: ['./recipe-details.component.scss'],
