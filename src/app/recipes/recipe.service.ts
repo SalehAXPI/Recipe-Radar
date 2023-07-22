@@ -3,6 +3,8 @@ import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { addIngredient } from '../shopping-list/store/shopping-list.actions';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeService {
@@ -10,10 +12,17 @@ export class RecipeService {
 
   private recipes: Recipe[] = [];
 
-  constructor(private shoppingListService: ShoppingListService) {}
+  constructor(
+    private shoppingListService: ShoppingListService,
+    private store: Store
+  ) {}
 
   getRecipes(): Recipe[] {
-    // When use spread operator (...) or slice method we are not copying recipes deeply because there are nested objects and array like ingredients and those two methods doesn't copy them and reference to original ones! (So we have to do copying like this)
+    // When use spread operator (...)
+    // or slice method we are not copying recipes deeply
+    // because there are nested objects and array like ingredients,
+    // and those two methods don't copy them and reference to original ones!
+    // (So we have to do copying like this)
     return this.recipes.map((recipe) => ({
       ...recipe,
       ingredients: [...recipe.ingredients],
@@ -25,7 +34,11 @@ export class RecipeService {
   }
 
   updateIngredients(ing: Ingredient[]) {
-    this.shoppingListService.addNewIng(ing);
+    this.store.dispatch(
+      addIngredient({
+        ingArr: [...ing.map((ing) => new Ingredient(ing.name, ing.amount))],
+      })
+    );
   }
 
   updateRecipe(index: number, updatedRecipe: Recipe) {

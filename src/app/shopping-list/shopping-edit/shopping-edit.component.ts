@@ -4,6 +4,12 @@ import { ShoppingListService } from '../shopping-list.service';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import {
+  addIngredient,
+  deleteIngredient,
+  editIngredient,
+} from '../store/shopping-list.actions';
 
 @Component({
   standalone: true,
@@ -18,7 +24,10 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   private subscribe!: Subscription;
   private ingIndex!: number;
 
-  constructor(private shoppingListService: ShoppingListService) {}
+  constructor(
+    private shoppingListService: ShoppingListService,
+    private store: Store<{ addIng: Ingredient[] }>
+  ) {}
 
   ngOnInit() {
     this.subscribe = this.shoppingListService.ingredientsEdited.subscribe(
@@ -37,9 +46,16 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   onSubmit() {
     const { name, amount } = this.shoppingForm.value;
     if (this.editMode) {
-      this.editIngredients(name, Number(amount));
+      this.store.dispatch(
+        editIngredient({
+          ingIndex: this.ingIndex,
+          newIng: { name: name, amount: amount },
+        })
+      );
     } else {
-      this.addNewIngredient(name, Number(amount));
+      this.store.dispatch(
+        addIngredient({ ingArr: [new Ingredient(name, Number(amount))] })
+      );
     }
     this.resetForm();
   }
@@ -50,25 +66,20 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    this.shoppingListService.deleteIngredient(this.ingIndex);
+    this.store.dispatch(deleteIngredient({ ingIndex: this.ingIndex }));
     this.onCancel();
   }
 
   private populateForm() {
-    const ingredients = this.shoppingListService.getIngredients[this.ingIndex];
-    this.shoppingForm.setValue({
-      name: ingredients.name,
-      amount: ingredients.amount,
+    const ingredients = this.store.select('addIng').subscribe((ing) => {
+      if (!ing.length) return;
+
+      const ingSelected = ing[this.ingIndex];
+      this.shoppingForm.setValue({
+        name: ingSelected.name,
+        amount: ingSelected.amount,
+      });
     });
-  }
-
-  private editIngredients(name: string, amount: number) {
-    this.shoppingListService.editIngredient(this.ingIndex, name, amount);
-    this.editMode = false;
-  }
-
-  private addNewIngredient(name: string, amount: number) {
-    this.shoppingListService.addNewIng(new Ingredient(name, Number(amount)));
   }
 
   private resetForm() {

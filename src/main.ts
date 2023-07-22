@@ -4,6 +4,9 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LoadingInterceptorService } from './app/shared/loading-interceptor.service';
 import { importProvidersFrom } from '@angular/core';
 import { AppRoutingModule } from './app/app-routing.module';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { shoppingListReducer } from './app/shopping-list/store/shopping-list.reducer';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -13,5 +16,7 @@ bootstrapApplication(AppComponent, {
       multi: true,
     },
     importProvidersFrom(AppRoutingModule, HttpClientModule),
+    provideStore({ addIng: shoppingListReducer }),
+    provideEffects(),
   ],
 }).catch((err) => err);
