@@ -21,13 +21,13 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
-    this.store.select('shoppingList').subscribe((e) => {
+    this.changeSubStat = this.store.select('shoppingList').subscribe((e) => {
       this.ingredients = e.ingredients;
     });
   }
 
   ngOnDestroy() {
-    // this.changeSubStat.unsubscribe();
+    this.changeSubStat.unsubscribe();
   }
 
   onEdit(i: number) {
