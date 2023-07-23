@@ -10,7 +10,7 @@ import {
   editIngredient,
   stopEditing,
 } from '../store/shopping-list.actions';
-import { AppState } from '../store/shopping-list.reducer';
+import { AppState } from '../../store/app.reducer';
 
 @Component({
   standalone: true,

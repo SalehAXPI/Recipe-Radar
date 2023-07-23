@@ -8,16 +8,12 @@ import {
   stopEditing,
 } from './shopping-list.actions';
 
-export interface State {
+export interface ShoppingListState {
   ingredients: Ingredient[];
   ingEditing: { ingredient: undefined | Ingredient; ingredientIndex: number };
 }
 
-export interface AppState {
-  shoppingList: State;
-}
-
-const initialState: State = {
+const initialState: ShoppingListState = {
   ingredients: [
     new Ingredient('Example', 5),
     new Ingredient('Another Example', 1),

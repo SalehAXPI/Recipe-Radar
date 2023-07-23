@@ -5,7 +5,7 @@ import { ShoppingEditComponent } from './shopping-edit/shopping-edit.component';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { startEditing } from './store/shopping-list.actions';
-import { AppState } from './store/shopping-list.reducer';
+import { AppState } from '../store/app.reducer';
 
 @Component({
   standalone: true,

@@ -6,7 +6,7 @@ import { importProvidersFrom } from '@angular/core';
 import { AppRoutingModule } from './app/app-routing.module';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { shoppingListReducer } from './app/shopping-list/store/shopping-list.reducer';
+import { appReducer } from './app/store/app.reducer';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -16,7 +16,7 @@ bootstrapApplication(AppComponent, {
       multi: true,
     },
     importProvidersFrom(AppRoutingModule, HttpClientModule),
-    provideStore({ shoppingList: shoppingListReducer }),
+    provideStore(appReducer),
     provideEffects(),
   ],
 }).catch((err) => err);
