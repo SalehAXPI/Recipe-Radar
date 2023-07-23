@@ -11,6 +11,8 @@ import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.reducer';
 
 @Component({
   standalone: true,
@@ -28,13 +30,14 @@ export class AuthComponent implements OnInit {
     private fb: FormBuilder,
     private loadingService: LoadingService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this.authService.loggedUser.subscribe({
+    this.store.select('auth').subscribe({
       next: (val) => {
-        val
+        val.user
           ? this.router.navigate(['/recipes'])
           : this.router.navigate(['/auth']);
       },
@@ -74,6 +77,7 @@ export class AuthComponent implements OnInit {
     authAction.subscribe({
       next: (resData) => {
         console.log(resData);
+        this.router.navigate(['/recipes']);
       },
       error: (err: string) => {
         this.handleAuthError(err);

@@ -4,6 +4,8 @@ import { AuthService } from '../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DropdownDirective } from '../shared/dropdown.directive';
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/app.reducer';
 
 @Component({
   standalone: true,
@@ -19,12 +21,13 @@ export class HeaderComponent implements OnInit {
   constructor(
     private dataStorageService: DataStorageService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this.authService.loggedUser.subscribe((user) => {
-      this.loggedIn = !!user;
+    this.store.select('auth').subscribe((user) => {
+      this.loggedIn = !!user.user;
     });
   }
 

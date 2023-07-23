@@ -34,16 +34,19 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
 
   setClickedRecipe() {
     const recipes = this.recipeService.getRecipes();
-    if (!recipes[this.recipeId! - 1]) {
-      this.router.navigate(['recipes']);
-      return;
+    if (recipes.length !== 0) {
+      this.clickedRecipe = this.recipeService.getRecipeById(this.recipeId! - 1);
     } else {
-      this.clickedRecipe = recipes[this.recipeId! - 1];
+      this.subscription = this.recipeService.recipeChanged.subscribe(
+        (recipe) => {
+          if (recipe[this.recipeId! - 1])
+            this.clickedRecipe = this.recipeService.getRecipeById(
+              this.recipeId! - 1
+            );
+          else this.router.navigate(['recipes']);
+        }
+      );
     }
-
-    this.subscription = this.recipeService.recipeChanged.subscribe((recipe) => {
-      this.clickedRecipe = recipe[this.recipeId! - 1];
-    });
   }
 
   updateIngredient() {

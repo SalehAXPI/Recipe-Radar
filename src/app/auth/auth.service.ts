@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import {
   LoginUserResponse,
   SignupUserResponse,
@@ -9,13 +9,18 @@ import {
 } from './user.model';
 import { RecipeService } from '../recipes/recipe.service';
 import { environment } from '../../environments/environment.development';
+import { Store } from '@ngrx/store';
+import { login, logout } from './store/auth.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  loggedUser = new BehaviorSubject<User | undefined>(undefined);
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private recipeService: RecipeService) {}
+  constructor(
+    private http: HttpClient,
+    private recipeService: RecipeService,
+    private store: Store
+  ) {}
 
   signUp(newUserEmail: string, newUserPassword: string) {
     return this.http
@@ -64,7 +69,8 @@ export class AuthService {
     );
 
     if (loadedUser.token) {
-      this.loggedUser.next(loadedUser);
+      // this.loggedUser.next(loadedUser);
+      this.store.dispatch(login(loadedUser));
 
       const exp =
         loadedUser._tokenExpirationDate.getTime() - new Date().getTime();
@@ -76,7 +82,7 @@ export class AuthService {
   }
 
   onLogout() {
-    this.loggedUser.next(undefined);
+    this.store.dispatch(logout());
     localStorage.removeItem('userData');
     this.recipeService.onLogout();
     if (this.tokenExpirationTimer) clearTimeout(this.tokenExpirationTimer);
@@ -101,7 +107,9 @@ export class AuthService {
       expirationDate
     );
 
-    this.loggedUser.next(user);
+    // this.loggedUser.next(user);
+    this.store.dispatch(login(user));
+
     this.autoLogout(+responseData.expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }

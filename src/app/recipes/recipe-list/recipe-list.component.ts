@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { RecipeService } from '../recipe.service';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecipeItemComponent } from './recipe-item/recipe-item.component';
 import { CommonModule } from '@angular/common';
@@ -17,13 +16,11 @@ import { CommonModule } from '@angular/common';
 export class RecipeListComponent implements OnInit, OnDestroy {
   recipes!: Recipe[];
   private subscription!: Subscription;
-  private loggedIn: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private recipeService: RecipeService,
-    private authService: AuthService
+    private recipeService: RecipeService
   ) {}
 
   ngOnInit() {
@@ -35,9 +32,6 @@ export class RecipeListComponent implements OnInit, OnDestroy {
         this.recipes = recipe;
       }
     );
-    this.authService.loggedUser.subscribe((user) => {
-      this.loggedIn = !!user;
-    });
   }
 
   ngOnDestroy() {
@@ -45,11 +39,6 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   }
 
   onNewRecipeClick() {
-    if (this.loggedIn) {
-      this.router.navigate(['new'], { relativeTo: this.route });
-      return;
-    }
-
-    this.router.navigate(['auth']);
+    this.router.navigate(['new'], { relativeTo: this.route });
   }
 }

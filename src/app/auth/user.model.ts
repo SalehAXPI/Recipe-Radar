@@ -31,9 +31,9 @@ export class User implements userResponseNeededData {
     readonly _tokenExpirationDate: Date
   ) {}
 
-  get token(): string | null {
+  get token(): undefined | string {
     return !this._tokenExpirationDate || new Date() > this._tokenExpirationDate
-      ? null
+      ? undefined
       : this._token;
   }
 }
