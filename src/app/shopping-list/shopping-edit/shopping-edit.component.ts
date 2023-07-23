@@ -46,13 +46,13 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     if (this.editMode) {
       this.store.dispatch(
         editIngredient({
-          ingIndex: this.ingIndex,
-          newIng: { name: name, amount: amount },
+          ingredientIndex: this.ingIndex,
+          updatedIngredient: { name: name, amount: amount },
         })
       );
     } else {
       this.store.dispatch(
-        addIngredient({ ingArr: [new Ingredient(name, Number(amount))] })
+        addIngredient({ ingredients: [new Ingredient(name, Number(amount))] })
       );
     }
     this.resetForm();
@@ -65,7 +65,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onDelete() {
-    this.store.dispatch(deleteIngredient({ ingIndex: this.ingIndex }));
+    this.store.dispatch(deleteIngredient({ ingredientIndex: this.ingIndex }));
     this.onCancel();
   }
 
