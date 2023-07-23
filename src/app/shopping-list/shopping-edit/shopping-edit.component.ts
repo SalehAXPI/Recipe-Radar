@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Ingredient } from '../../shared/ingredient.model';
-import { ShoppingListService } from '../shopping-list.service';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -9,7 +8,9 @@ import {
   addIngredient,
   deleteIngredient,
   editIngredient,
+  stopEditing,
 } from '../store/shopping-list.actions';
+import { AppState } from '../store/shopping-list.reducer';
 
 @Component({
   standalone: true,
@@ -24,23 +25,20 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   private subscribe!: Subscription;
   private ingIndex!: number;
 
-  constructor(
-    private shoppingListService: ShoppingListService,
-    private store: Store<{ addIng: Ingredient[] }>
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
-    this.subscribe = this.shoppingListService.ingredientsEdited.subscribe(
-      (ingIndex: number) => {
-        this.editMode = true;
-        this.ingIndex = ingIndex;
+    this.store.select('shoppingList').subscribe((state) => {
+      this.editMode = !!state.ingEditing.ingredient;
+      if (this.editMode) {
+        this.ingIndex = state.ingEditing.ingredientIndex;
         this.populateForm();
       }
-    );
+    });
   }
 
   ngOnDestroy() {
-    this.subscribe.unsubscribe();
+    // this.subscribe.unsubscribe();
   }
 
   onSubmit() {
@@ -61,6 +59,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onCancel() {
+    this.store.dispatch(stopEditing());
     this.editMode = false;
     this.resetForm();
   }
@@ -71,14 +70,13 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   private populateForm() {
-    const ingredients = this.store.select('addIng').subscribe((ing) => {
-      if (!ing.length) return;
-
-      const ingSelected = ing[this.ingIndex];
-      this.shoppingForm.setValue({
-        name: ingSelected.name,
-        amount: ingSelected.amount,
-      });
+    this.store.select('shoppingList').subscribe((state) => {
+      const ingSelected = state.ingEditing.ingredient;
+      if (ingSelected)
+        this.shoppingForm.setValue({
+          name: ingSelected.name,
+          amount: ingSelected.amount,
+        });
     });
   }
 

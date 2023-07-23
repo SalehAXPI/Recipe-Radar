@@ -16,7 +16,7 @@ bootstrapApplication(AppComponent, {
       multi: true,
     },
     importProvidersFrom(AppRoutingModule, HttpClientModule),
-    provideStore({ addIng: shoppingListReducer }),
+    provideStore({ shoppingList: shoppingListReducer }),
     provideEffects(),
   ],
 }).catch((err) => err);
