@@ -7,14 +7,40 @@ import {
   login,
   loginError,
   logout,
+  signup,
   startLogin,
+  startSignup,
 } from './auth.actions';
 import { catchError, map, of, switchMap } from 'rxjs';
-import { LoginUserResponse, User, userResponseNeededData } from '../user.model';
+import {
+  LoginUserResponse,
+  SignupUserResponse,
+  User,
+  userResponseNeededData,
+} from '../user.model';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 
-function getErrorMessage(errorMessage: string): string {
+const LOGIN_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`;
+const SIGNUP_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`;
+
+const createUserAndStoreInLocalStorage = (
+  responseData: LoginUserResponse | SignupUserResponse
+): User => {
+  const expirationDate = new Date(
+    new Date().getTime() + +responseData.expiresIn * 1000
+  );
+  const user = new User(
+    responseData.email,
+    responseData.localId,
+    responseData.idToken,
+    expirationDate
+  );
+  localStorage.setItem('userData', JSON.stringify(user));
+  return user;
+};
+
+const getErrorMessage = (errorMessage: string): string => {
   switch (errorMessage) {
     case 'INVALID_PASSWORD':
       return 'Password Is Not Correct, Please Try Again!';
@@ -31,7 +57,7 @@ function getErrorMessage(errorMessage: string): string {
     default:
       return 'An unknown error occurs!';
   }
-}
+};
 
 @Injectable()
 export class AuthEffects {
@@ -69,38 +95,48 @@ export class AuthEffects {
   loginEffect = createEffect(() =>
     this.actions$.pipe(
       ofType(startLogin),
-      switchMap((state) => {
-        if (!state.email && !state.password) return of();
+      switchMap(({ email, password }) => {
+        if (!email && !password) return of();
 
         return this.http
-          .post<LoginUserResponse>(
-            `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`,
-            {
-              email: state.email,
-              password: state.password,
-              returnSecureToken: true,
-            }
-          )
+          .post<LoginUserResponse>(LOGIN_API_URL, {
+            email,
+            password,
+            returnSecureToken: true,
+          })
           .pipe(
-            map((responseData) => {
-              debugger;
-              const expirationDate = new Date(
-                new Date().getTime() + +responseData.expiresIn * 1000
-              );
-
-              const user = new User(
-                responseData.email,
-                responseData.localId,
-                responseData.idToken,
-                expirationDate
-              );
-              localStorage.setItem('userData', JSON.stringify(user));
-
-              return login(user);
-            }),
+            map((responseData) =>
+              signup(createUserAndStoreInLocalStorage(responseData))
+            ),
             catchError((errorRes: HttpErrorResponse) => {
-              debugger;
+              return of(
+                loginError({
+                  errorMessage: getErrorMessage(errorRes.error.error.message),
+                })
+              );
+            })
+          );
+      })
+    )
+  );
 
+  signupEffect = createEffect(() =>
+    this.actions$.pipe(
+      ofType(startSignup),
+      switchMap(({ email, password }) => {
+        if (!email && !password) return of();
+
+        return this.http
+          .post<SignupUserResponse>(SIGNUP_API_URL, {
+            email,
+            password,
+            returnSecureToken: true,
+          })
+          .pipe(
+            map((responseData) =>
+              signup(createUserAndStoreInLocalStorage(responseData))
+            ),
+            catchError((errorRes: HttpErrorResponse) => {
               return of(
                 loginError({
                   errorMessage: getErrorMessage(errorRes.error.error.message),

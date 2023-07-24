@@ -1,6 +1,13 @@
 import { createReducer, on } from '@ngrx/store';
 import { User } from '../user.model';
-import { login, loginError, logout, signup } from './auth.actions';
+import {
+  login,
+  loginError,
+  logout,
+  signup,
+  startLogin,
+  startSignup,
+} from './auth.actions';
 
 export interface AuthState {
   user: User | undefined;
@@ -21,6 +28,12 @@ export const authReducer = createReducer(
       user: new User(email, id, _token, _tokenExpirationDate),
       authError: undefined,
     };
+  }),
+  on(startLogin, (state) => {
+    return { ...state, authError: undefined };
+  }),
+  on(startSignup, (state) => {
+    return { ...state, authError: undefined };
   }),
   on(signup, (state, action) => {
     const { email, id, _token, _tokenExpirationDate } = action;
