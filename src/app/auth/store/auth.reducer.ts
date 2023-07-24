@@ -1,13 +1,15 @@
 import { createReducer, on } from '@ngrx/store';
 import { User } from '../user.model';
-import { login, logout } from './auth.actions';
+import { login, loginError, logout, signup } from './auth.actions';
 
 export interface AuthState {
   user: User | undefined;
+  authError: string | undefined;
 }
 
 const initialState: AuthState = {
   user: undefined,
+  authError: undefined,
 };
 
 export const authReducer = createReducer(
@@ -17,9 +19,21 @@ export const authReducer = createReducer(
     return {
       ...state,
       user: new User(email, id, _token, _tokenExpirationDate),
+      authError: undefined,
+    };
+  }),
+  on(signup, (state, action) => {
+    const { email, id, _token, _tokenExpirationDate } = action;
+    return {
+      ...state,
+      user: new User(email, id, _token, _tokenExpirationDate),
+      authError: undefined,
     };
   }),
   on(logout, (state) => {
-    return { ...state, user: undefined };
+    return { ...state, user: undefined, authError: undefined };
+  }),
+  on(loginError, (state, action) => {
+    return { ...state, authError: action.errorMessage };
   })
 );

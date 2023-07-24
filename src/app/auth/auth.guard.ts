@@ -7,6 +7,8 @@ import { AppState } from '../store/app.reducer';
 
 @Injectable({ providedIn: 'root' })
 class PermissionService {
+  isUserLoggedIn: boolean = false;
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -14,11 +16,10 @@ class PermissionService {
   ) {}
 
   isAuth() {
-    let bemola;
     this.store.select('auth').subscribe((state) => {
-      bemola = !!state.user;
+      this.isUserLoggedIn = !!state.user;
     });
-    return bemola;
+    return this.isUserLoggedIn;
   }
 
   routeToAuthPage() {

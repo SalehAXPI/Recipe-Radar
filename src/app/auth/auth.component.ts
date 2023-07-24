@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
+import { startLogin, startSignup } from './store/auth.actions';
 
 @Component({
   standalone: true,
@@ -67,24 +68,17 @@ export class AuthComponent implements OnInit {
     }
 
     this.invalidForm = false;
-
     const { email, password } = this.authForm.value;
-    const authAction =
-      this.authMode.getValue() === 'signup'
-        ? this.authService.signUp(email, password)
-        : this.authService.login(email, password);
+    this.authMode.getValue() === 'signup'
+      ? this.store.dispatch(startSignup({ email, password }))
+      : this.store.dispatch(startLogin({ email, password }));
 
-    authAction.subscribe({
-      next: (resData) => {
-        console.log(resData);
-        this.router.navigate(['/recipes']);
-      },
-      error: (err: string) => {
-        this.handleAuthError(err);
-      },
-      complete: () => {
-        this.handleAuthCompletion();
-      },
+    const authAction = this.store.select('auth');
+
+    authAction.subscribe((state) => {
+      if (state.user) this.router.navigate(['/recipes']);
+
+      if (state.authError) this.handleAuthError(state.authError);
     });
 
     this.resetForm();
@@ -93,11 +87,6 @@ export class AuthComponent implements OnInit {
   handleAuthError(err: string) {
     this.loadingService.isFetching.next(false);
     this.loadingService.error.next(err);
-  }
-
-  handleAuthCompletion() {
-    this.loadingService.isFetching.next(false);
-    this.invalidForm = false;
   }
 
   resetForm() {

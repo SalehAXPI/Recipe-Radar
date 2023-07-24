@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app/app-routing.module';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { appReducer } from './app/store/app.reducer';
+import { AuthEffects } from './app/auth/store/auth.effects';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -17,6 +18,6 @@ bootstrapApplication(AppComponent, {
     },
     importProvidersFrom(AppRoutingModule, HttpClientModule),
     provideStore(appReducer),
-    provideEffects(),
+    provideEffects(AuthEffects),
   ],
 }).catch((err) => err);
