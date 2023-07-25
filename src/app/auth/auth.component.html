@@ -16,12 +16,12 @@
         <label class="form-label" for="exampleInputPassword1">Password</label>
         <input
           [autocomplete]="
-            authMode.getValue() === 'signup'
+            (authMode | async) === 'signup'
               ? 'new-password'
               : 'current-password'
           "
           [name]="
-            authMode.getValue() === 'signup'
+            (authMode | async) === 'signup'
               ? 'new-password'
               : 'current-password'
           "
@@ -34,7 +34,7 @@
           *ngIf="
             authForm.get('password')?.invalid &&
             authForm.get('password')?.dirty &&
-            authMode.getValue() === 'signup'
+            (authMode | async) === 'signup'
           "
           class="form-text"
         >
@@ -43,16 +43,16 @@
         </p>
       </div>
 
-      <div *ngIf="invalidForm" class="alert alert-danger">
+      <div *ngIf="!(validForm$ | async)" class="alert alert-danger">
         Please Enter Inputs Correctly!
       </div>
       <div class="row">
         <div class="btn-group col-12 col-lg-4">
           <button class="btn btn-success" type="submit">
-            {{ authMode.getValue() | firstLetterUppercase }}
+            {{ (authMode | async)! | firstLetterUppercase }}
           </button>
           <button (click)="onSwitchMode()" class="btn btn-dark" type="button">
-            Change to {{ authMode.getValue() === "login" ? "Signup" : "Login" }}
+            Change to {{ (authMode | async) === "login" ? "Signup" : "Login" }}
           </button>
         </div>
       </div>

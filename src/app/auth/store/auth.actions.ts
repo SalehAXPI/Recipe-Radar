@@ -28,4 +28,18 @@ export const startSignup = createAction(
   props<{ email: string; password: string }>()
 );
 
+export const isFormValid = createAction(
+  '[Auth] Submitting',
+  props<{ isValid: boolean }>()
+);
+
+export const switchAuthMode = createAction('[Auth] Change Auth Mode');
+
+export const startAuth = createAction(
+  '[Auth] Start Auth',
+  props<{ email: string; password: string }>()
+);
+
+export const signInDone = createAction('[Auth] SignIn Done');
+
 export const logout = createAction('[Auth] Logout');

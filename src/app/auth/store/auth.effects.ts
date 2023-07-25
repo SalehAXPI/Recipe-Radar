@@ -7,11 +7,13 @@ import {
   login,
   loginError,
   logout,
+  signInDone,
   signup,
+  startAuth,
   startLogin,
   startSignup,
 } from './auth.actions';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 import {
   LoginUserResponse,
   SignupUserResponse,
@@ -22,6 +24,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Router } from '@angular/router';
 import { RecipeService } from '../../recipes/recipe.service';
+import { LoadingService } from '../../shared/loading.service';
 
 @Injectable()
 export class AuthEffects {
@@ -126,6 +129,57 @@ export class AuthEffects {
       ),
     { dispatch: false }
   );
+
+  authEffect = createEffect(() =>
+    this.actions$.pipe(
+      ofType(startAuth),
+      withLatestFrom(this.store.select((state) => state.auth.form.authMode)),
+      switchMap(([{ email, password }, authMode]) => {
+        return authMode === 'signup'
+          ? of(startSignup({ email, password }))
+          : of(startLogin({ email, password }));
+      })
+    )
+  );
+
+  loginReflect = createEffect(() =>
+    this.actions$.pipe(
+      ofType(login),
+      switchMap(() => of(signInDone()))
+    )
+  );
+
+  signupReflect = createEffect(() =>
+    this.actions$.pipe(
+      ofType(signup),
+      switchMap(() => of(signInDone()))
+    )
+  );
+  logInErrorReflect = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loginError),
+      switchMap(() => of(signInDone()))
+    )
+  );
+
+  signInDone = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(signInDone),
+        withLatestFrom(this.store.select('auth')),
+        switchMap(([_, action]) => {
+          if (action.user) this.router.navigate(['/recipes']);
+
+          if (action.authError) {
+            this.loadingService.isFetching.next(false);
+            this.loadingService.error.next(action.authError);
+          }
+          return of();
+        })
+      ),
+    { dispatch: false }
+  );
+
   private tokenExpirationTimer: any;
 
   constructor(
@@ -133,7 +187,8 @@ export class AuthEffects {
     private store: Store<AppState>,
     private http: HttpClient,
     private router: Router,
-    private recipeService: RecipeService
+    private recipeService: RecipeService,
+    private loadingService: LoadingService
   ) {}
 
   setLogOutTimer(expTime: number) {

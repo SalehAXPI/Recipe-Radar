@@ -6,13 +6,12 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
-import { startLogin, startSignup } from './store/auth.actions';
+import { isFormValid, startAuth, switchAuthMode } from './store/auth.actions';
 
 @Component({
   standalone: true,
@@ -23,8 +22,8 @@ import { startLogin, startSignup } from './store/auth.actions';
 })
 export class AuthComponent implements OnInit {
   authForm!: FormGroup;
-  authMode = new BehaviorSubject<'signup' | 'login'>('login');
-  invalidForm: boolean = false;
+  authMode = this.store.select((state) => state.auth.form.authMode);
+  validForm$ = this.store.select((state) => state.auth.form.isFormValid);
 
   constructor(
     private fb: FormBuilder,
@@ -52,43 +51,17 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.authForm.invalid) {
-      this.invalidForm = true;
-      return;
-    }
+    this.store.dispatch(isFormValid({ isValid: this.authForm.valid }));
+    if (!this.authForm.valid) return;
 
-    this.invalidForm = false;
     const { email, password } = this.authForm.value;
-    this.authMode.getValue() === 'signup'
-      ? this.store.dispatch(startSignup({ email, password }))
-      : this.store.dispatch(startLogin({ email, password }));
+    this.store.dispatch(startAuth({ email, password }));
 
-    const authAction = this.store.select('auth');
-
-    authAction.subscribe((state) => {
-      if (state.user) this.router.navigate(['/recipes']);
-
-      if (state.authError) this.handleAuthError(state.authError);
-    });
-
-    this.resetForm();
-  }
-
-  handleAuthError(err: string) {
-    this.loadingService.isFetching.next(false);
-    this.loadingService.error.next(err);
-  }
-
-  resetForm() {
     this.authForm.reset();
   }
 
   onSwitchMode() {
-    this.invalidForm = false;
     this.loadingService.error.next(undefined);
-
-    this.authMode.getValue() === 'signup'
-      ? this.authMode.next('login')
-      : this.authMode.next('signup');
+    this.store.dispatch(switchAuthMode());
   }
 }
