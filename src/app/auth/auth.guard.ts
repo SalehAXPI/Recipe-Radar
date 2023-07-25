@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
 
@@ -9,11 +8,7 @@ import { AppState } from '../store/app.reducer';
 class PermissionService {
   isUserLoggedIn: boolean = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private store: Store<AppState>
-  ) {}
+  constructor(private router: Router, private store: Store<AppState>) {}
 
   isAuth() {
     this.store.select('auth').subscribe((state) => {

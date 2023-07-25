@@ -32,7 +32,9 @@ export class RecipeService {
   updateIngredients(ing: Ingredient[]) {
     this.store.dispatch(
       addIngredient({
-        ingredients: [...ing.map((ing) => new Ingredient(ing.name, ing.amount))],
+        ingredients: [
+          ...ing.map((ing) => new Ingredient(ing.name, ing.amount)),
+        ],
       })
     );
   }

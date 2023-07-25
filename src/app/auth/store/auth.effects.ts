@@ -11,7 +11,7 @@ import {
   startLogin,
   startSignup,
 } from './auth.actions';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import {
   LoginUserResponse,
   SignupUserResponse,
@@ -20,59 +20,28 @@ import {
 } from '../user.model';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
-
-const LOGIN_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`;
-const SIGNUP_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`;
-
-const createUserAndStoreInLocalStorage = (
-  responseData: LoginUserResponse | SignupUserResponse
-): User => {
-  const expirationDate = new Date(
-    new Date().getTime() + +responseData.expiresIn * 1000
-  );
-  const user = new User(
-    responseData.email,
-    responseData.localId,
-    responseData.idToken,
-    expirationDate
-  );
-  localStorage.setItem('userData', JSON.stringify(user));
-  return user;
-};
-
-const getErrorMessage = (errorMessage: string): string => {
-  switch (errorMessage) {
-    case 'INVALID_PASSWORD':
-      return 'Password Is Not Correct, Please Try Again!';
-
-    case 'EMAIL_NOT_FOUND':
-      return 'Email Not Found, Please Try Again!';
-
-    case 'EMAIL_EXISTS':
-      return 'This Email has already signed up!';
-
-    case 'INVALID_EMAIL':
-      return "Email Isn't Valid, Please Try With Another Email!";
-
-    default:
-      return 'An unknown error occurs!';
-  }
-};
+import { Router } from '@angular/router';
+import { RecipeService } from '../../recipes/recipe.service';
 
 @Injectable()
 export class AuthEffects {
+  LOGIN_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`;
+  SIGNUP_API_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`;
   autoLogin = createEffect(() =>
     this.actions$.pipe(
       ofType(initLogin),
       switchMap(() => {
         const userData = localStorage.getItem('userData');
-        if (!userData) return of(logout());
+        if (!userData) return of();
 
         const parsedUserData = JSON.parse(userData) as userResponseNeededData;
 
         const exp = new Date(
           new Date(parsedUserData._tokenExpirationDate).getTime()
         );
+
+        this.clearLogOutTimer();
+        this.setLogOutTimer(exp.getTime() - new Date().getTime());
 
         const loadedUser = new User(
           parsedUserData.email,
@@ -81,37 +50,32 @@ export class AuthEffects {
           exp
         );
 
-        const expRemain = exp.getTime() - new Date().getTime();
-        setTimeout(() => {
-          return of(logout);
-        }, expRemain);
-
         if (loadedUser.token) return of(login(loadedUser));
         else return of(logout());
       })
     )
   );
-
   loginEffect = createEffect(() =>
     this.actions$.pipe(
       ofType(startLogin),
       switchMap(({ email, password }) => {
         if (!email && !password) return of();
-
         return this.http
-          .post<LoginUserResponse>(LOGIN_API_URL, {
+          .post<LoginUserResponse>(this.LOGIN_API_URL, {
             email,
             password,
             returnSecureToken: true,
           })
           .pipe(
             map((responseData) =>
-              signup(createUserAndStoreInLocalStorage(responseData))
+              login(this.createUserAndStoreInLocalStorage(responseData))
             ),
             catchError((errorRes: HttpErrorResponse) => {
               return of(
                 loginError({
-                  errorMessage: getErrorMessage(errorRes.error.error.message),
+                  errorMessage: this.getErrorMessage(
+                    errorRes.error.error.message
+                  ),
                 })
               );
             })
@@ -127,19 +91,21 @@ export class AuthEffects {
         if (!email && !password) return of();
 
         return this.http
-          .post<SignupUserResponse>(SIGNUP_API_URL, {
+          .post<SignupUserResponse>(this.SIGNUP_API_URL, {
             email,
             password,
             returnSecureToken: true,
           })
           .pipe(
             map((responseData) =>
-              signup(createUserAndStoreInLocalStorage(responseData))
+              signup(this.createUserAndStoreInLocalStorage(responseData))
             ),
             catchError((errorRes: HttpErrorResponse) => {
               return of(
                 loginError({
-                  errorMessage: getErrorMessage(errorRes.error.error.message),
+                  errorMessage: this.getErrorMessage(
+                    errorRes.error.error.message
+                  ),
                 })
               );
             })
@@ -147,10 +113,78 @@ export class AuthEffects {
       })
     )
   );
+  logoutEffect = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(logout),
+        tap(() => {
+          this.clearLogOutTimer();
+          this.router.navigate(['auth']);
+          localStorage.removeItem('userData');
+          this.recipeService.onLogout();
+        })
+      ),
+    { dispatch: false }
+  );
+  private tokenExpirationTimer: any;
 
   constructor(
     private actions$: Actions,
     private store: Store<AppState>,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
+    private recipeService: RecipeService
   ) {}
+
+  setLogOutTimer(expTime: number) {
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.store.dispatch(logout());
+    }, expTime);
+  }
+
+  clearLogOutTimer() {
+    if (this.tokenExpirationTimer) {
+      console.log(this.tokenExpirationTimer);
+      clearTimeout(this.tokenExpirationTimer);
+      this.tokenExpirationTimer = null;
+    }
+  }
+
+  private createUserAndStoreInLocalStorage(
+    responseData: LoginUserResponse | SignupUserResponse
+  ): User {
+    const expirationDate = new Date(
+      new Date().getTime() + +responseData.expiresIn * 1000
+    );
+
+    this.setLogOutTimer(expirationDate.getTime() - new Date().getTime());
+
+    const user = new User(
+      responseData.email,
+      responseData.localId,
+      responseData.idToken,
+      expirationDate
+    );
+    localStorage.setItem('userData', JSON.stringify(user));
+    return user;
+  }
+
+  private getErrorMessage(errorMessage: string): string {
+    switch (errorMessage) {
+      case 'INVALID_PASSWORD':
+        return 'Password Is Not Correct, Please Try Again!';
+
+      case 'EMAIL_NOT_FOUND':
+        return 'Email Not Found, Please Try Again!';
+
+      case 'EMAIL_EXISTS':
+        return 'This Email has already signed up!';
+
+      case 'INVALID_EMAIL':
+        return "Email Isn't Valid, Please Try With Another Email!";
+
+      default:
+        return 'An unknown error occurs!';
+    }
+  }
 }

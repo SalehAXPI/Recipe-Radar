@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { DataStorageService } from '../shared/data-storage.service';
-import { AuthService } from '../auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DropdownDirective } from '../shared/dropdown.directive';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
+import { logout } from '../auth/store/auth.actions';
 
 @Component({
   standalone: true,
@@ -20,7 +20,6 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private dataStorageService: DataStorageService,
-    private authService: AuthService,
     private router: Router,
     private store: Store<AppState>
   ) {}
@@ -40,8 +39,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onLogout() {
-    this.authService.onLogout();
-    this.router.navigate(['auth']);
+    this.store.dispatch(logout());
   }
 
   onManageClick() {

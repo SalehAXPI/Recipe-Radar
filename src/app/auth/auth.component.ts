@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
-import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
@@ -30,20 +29,11 @@ export class AuthComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private loadingService: LoadingService,
-    private authService: AuthService,
     private router: Router,
     private store: Store<AppState>
   ) {}
 
   ngOnInit() {
-    this.store.select('auth').subscribe({
-      next: (val) => {
-        val.user
-          ? this.router.navigate(['/recipes'])
-          : this.router.navigate(['/auth']);
-      },
-    });
-
     const passwordVal = [
       Validators.required,
       Validators.pattern('[^\\s]+'),

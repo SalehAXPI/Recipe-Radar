@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
 import { LoadingService } from './loading.service';
-import { AuthService } from '../auth/auth.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.reducer';
 
@@ -11,12 +10,10 @@ import { AppState } from '../store/app.reducer';
 export class DataStorageService {
   authToken: string | undefined;
 
-  // TODO Try using interceptors to add token in every outgoing request instead of this
   constructor(
     private http: HttpClient,
     private recipeService: RecipeService,
     private loadingService: LoadingService,
-    private authService: AuthService,
     private store: Store<AppState>
   ) {}
 
