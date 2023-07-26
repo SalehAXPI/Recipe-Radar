@@ -12,7 +12,6 @@ export const RecipesRouting: Routes = [
     component: RecipesComponent,
     resolve: [productResolver],
     canActivate: [authGuard],
-    canActivateChild: [authGuard],
     children: [
       { path: '', component: RecipeStartComponent },
       {

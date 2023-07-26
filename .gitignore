@@ -42,6 +42,10 @@ testem.log
 Thumbs.db
 
 # Firebase files
-.firebaserc
-firebase.json
+./.firebaserc
+./firebase.json
 /.firebase/
+
+# Qodana file
+./qodana.yaml
+/qodana.yaml

@@ -9,6 +9,7 @@ import { provideEffects } from '@ngrx/effects';
 import { appReducer } from './app/store/app.reducer';
 import { AuthEffects } from './app/auth/store/auth.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideRouterStore } from '@ngrx/router-store';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -21,5 +22,6 @@ bootstrapApplication(AppComponent, {
     provideStore(appReducer),
     provideEffects(AuthEffects),
     provideStoreDevtools({ logOnly: !isDevMode() }),
+    provideRouterStore(),
   ],
 }).catch((err) => err);
