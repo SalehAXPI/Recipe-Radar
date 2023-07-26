@@ -54,7 +54,7 @@ export class AuthEffects {
         );
 
         if (loadedUser.token) return of(login(loadedUser));
-        else return of(logout());
+        else return of(logout({}));
       })
     )
   );
@@ -120,9 +120,10 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(logout),
-        tap(() => {
+        tap(({ reason }) => {
           this.clearLogOutTimer();
           this.router.navigate(['auth']);
+          this.loadingService.error.next(reason);
           localStorage.removeItem('userData');
           this.recipeService.onLogout();
         })
@@ -193,7 +194,11 @@ export class AuthEffects {
 
   setLogOutTimer(expTime: number) {
     this.tokenExpirationTimer = setTimeout(() => {
-      this.store.dispatch(logout());
+      this.store.dispatch(
+        logout({
+          reason: 'Your token is automatically expired, please Login again!',
+        })
+      );
     }, expTime);
   }
 

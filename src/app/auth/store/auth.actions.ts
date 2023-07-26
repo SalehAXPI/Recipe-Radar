@@ -42,4 +42,7 @@ export const startAuth = createAction(
 
 export const signInDone = createAction('[Auth] SignIn Done');
 
-export const logout = createAction('[Auth] Logout');
+export const logout = createAction(
+  '[Auth] Logout',
+  props<{ reason?: string }>()
+);

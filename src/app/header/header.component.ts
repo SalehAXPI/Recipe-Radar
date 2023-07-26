@@ -39,7 +39,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onLogout() {
-    this.store.dispatch(logout());
+    this.store.dispatch(logout({}));
   }
 
   onManageClick() {
