@@ -7,7 +7,7 @@ export const getAndUpdateRecipes = createAction(
   props<{ updatedRecipes: Recipe[] }>()
 );
 
-export const updateIngredient = createAction(
+export const addRecipeIngredients = createAction(
   '[Recipe] Update Ingredients',
   props<{ recipeIng: Ingredient[] }>()
 );

@@ -10,6 +10,7 @@ import { appReducer } from './app/store/app.reducer';
 import { AuthEffects } from './app/auth/store/auth.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideRouterStore } from '@ngrx/router-store';
+import { RecipeEffects } from './app/recipes/store/recipe.effects';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -20,7 +21,7 @@ bootstrapApplication(AppComponent, {
     },
     importProvidersFrom(AppRoutingModule, HttpClientModule),
     provideStore(appReducer),
-    provideEffects(AuthEffects),
+    provideEffects(AuthEffects, RecipeEffects),
     provideStoreDevtools({ logOnly: !isDevMode() }),
     provideRouterStore(),
   ],

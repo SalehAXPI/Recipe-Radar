@@ -7,7 +7,8 @@ import { DropdownDirective } from '../../shared/dropdown.directive';
 import { CommonModule } from '@angular/common';
 import { AppState } from '../../store/app.reducer';
 import { Store } from '@ngrx/store';
-import { deleteRecipe, updateIngredient } from '../store/recipe.actions';
+import { addRecipeIngredients, deleteRecipe } from '../store/recipe.actions';
+import { LoadingService } from '../../shared/loading.service';
 
 @Component({
   standalone: true,
@@ -26,7 +27,8 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit() {
@@ -40,13 +42,17 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
     this.store
       .select((state) => state.recipes.recipes)
       .subscribe((recipes) => {
+        if (!recipes[this.recipeId! - 1]) {
+          return;
+        }
         this.clickedRecipe = recipes[this.recipeId! - 1];
+        this.loadingService.error.next(undefined);
       });
   }
 
   updateIngredient() {
     this.store.dispatch(
-      updateIngredient({
+      addRecipeIngredients({
         recipeIng: this.clickedRecipe!.ingredients.map((ing) => {
           return new Ingredient(ing.name, ing.amount);
         }),
@@ -65,5 +71,6 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.subscription.unsubscribe();
+    this.loadingService.error.next(undefined);
   }
 }

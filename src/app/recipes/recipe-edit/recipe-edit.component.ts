@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
   FormArray,
@@ -10,8 +10,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.reducer';
-import { Recipe } from '../recipe.model';
 import { addRecipe, updateRecipe } from '../store/recipe.actions';
+import { Recipe } from '../recipe.model';
+import { LoadingService } from '../../shared/loading.service';
 
 @Component({
   standalone: true,
@@ -20,16 +21,18 @@ import { addRecipe, updateRecipe } from '../store/recipe.actions';
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.scss'],
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
   editForm!: FormGroup;
   editMode: boolean = false;
   private id!: number | null;
+  recipeSelected: Recipe | undefined;
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private router: Router,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private loadingService: LoadingService
   ) {}
 
   get ingControls() {
@@ -37,7 +40,19 @@ export class RecipeEditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initializeForm();
+    this.route.params.subscribe((param: Params) => {
+      this.id = param['id'] ? +param['id'] : null;
+      if (this.id) {
+        this.editMode = true;
+        this.fillFormInputs();
+      } else {
+        this.editMode = false;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.loadingService.error.next(undefined);
   }
 
   onAddIngredient() {
@@ -81,32 +96,26 @@ export class RecipeEditComponent implements OnInit {
     });
   }
 
-  private subscribeToRouteParams() {
-    this.route.params.subscribe((param: Params) => {
-      this.id = param['id'] ? +param['id'] : null;
-      this.editMode = !!this.id;
-      if (this.editMode) this.fillFormInputs();
-    });
-  }
-
   private fillFormInputs() {
-    let recipeSelected: Recipe;
     this.store
       .select((state) => state.recipes.recipes)
       .subscribe((recipes) => {
-        recipeSelected = recipes[this.id! - 1];
+        this.recipeSelected = recipes[this.id! - 1];
+        if (!this.recipeSelected) return;
+
+        this.initializeForm();
+        this.editForm.patchValue(this.recipeSelected);
+
+        const ingredientsArray = this.recipeSelected.ingredients || [];
+        const formIngredientsArray = this.editForm.get(
+          'ingredients'
+        ) as FormArray;
+        formIngredientsArray.clear();
+
+        ingredientsArray.forEach((ing) =>
+          formIngredientsArray.push(this.createIngredientGroup(ing))
+        );
       });
-    if (!recipeSelected!) return;
-
-    this.editForm.patchValue(recipeSelected);
-
-    const ingredientsArray = recipeSelected.ingredients || [];
-    const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
-    formIngredientsArray.clear();
-
-    ingredientsArray.forEach((ing) =>
-      formIngredientsArray.push(this.createIngredientGroup(ing))
-    );
   }
 
   private createIngredientGroup(

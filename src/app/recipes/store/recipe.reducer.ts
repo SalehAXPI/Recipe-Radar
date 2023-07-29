@@ -1,6 +1,11 @@
 import { Recipe } from '../recipe.model';
 import { createReducer, on } from '@ngrx/store';
-import { getAndUpdateRecipes } from './recipe.actions';
+import {
+  addRecipe,
+  deleteRecipe,
+  getAndUpdateRecipes,
+  updateRecipe,
+} from './recipe.actions';
 
 export interface RecipeState {
   recipes: Recipe[];
@@ -22,5 +27,30 @@ export const recipeReducer = createReducer(
         };
       }),
     };
-  })
-);
+  }),
+    on(updateRecipe, (state, action) => {
+      debugger;
+      return {
+        ...state,
+        recipes: [
+          ...state.recipes.slice(0, action.index), // Copy elements before the updated recipe
+          action.updatedRecipe, // Insert the updated recipe at the specified index
+          ...state.recipes.slice(action.index + 1), // Copy elements after the updated recipe
+        ],
+      };
+    }),
+    on(addRecipe, (state, action) => {
+      return {
+        ...state,
+        recipes: [...state.recipes, action.recipeToAdd],
+      };
+    }),
+    on(deleteRecipe, (state, action) => {
+      const stateArr = [...state.recipes];
+      stateArr.splice(action.recipeId, 1);
+      return {
+        ...state,
+        recipes: [...stateArr],
+      };
+    })
+)

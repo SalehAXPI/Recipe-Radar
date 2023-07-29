@@ -1,4 +1,4 @@
-<div class="row">
+<div *ngIf="recipeSelected" class="row">
   <div class="col-sm-12">
     <form (ngSubmit)="onSubmit()" [formGroup]="editForm">
       <div class="row">

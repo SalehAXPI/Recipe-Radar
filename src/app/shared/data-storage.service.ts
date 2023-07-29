@@ -27,7 +27,7 @@ export class DataStorageService {
       this.http
         .put(
           'https://reciperadar-a2db4-default-rtdb.firebaseio.com/recipes.json',
-          recipes,
+          recipes.recipes,
           this.authToken
             ? {
                 params: { auth: this.authToken },

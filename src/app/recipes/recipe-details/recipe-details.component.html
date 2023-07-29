@@ -1,4 +1,4 @@
-<div *ngIf="clickedRecipe;else recipeError">
+<div *ngIf="clickedRecipe">
   <div class="row">
     <div class="text-center">
       <img
@@ -45,6 +45,3 @@
     </div>
   </div>
 </div>
-<ng-template #recipeError>
-  <div class="alert alert-danger">There is no Recipe With this ID!</div>
-</ng-template>
