@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
-import { RecipeService } from '../recipe.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Ingredient } from '../../shared/ingredient.model';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DropdownDirective } from '../../shared/dropdown.directive';
 import { CommonModule } from '@angular/common';
+import { AppState } from '../../store/app.reducer';
+import { Store } from '@ngrx/store';
+import { deleteRecipe, updateIngredient } from '../store/recipe.actions';
 
 @Component({
   standalone: true,
@@ -15,44 +17,39 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit, OnDestroy {
-  clickedRecipe: Recipe = {} as Recipe;
-  recipeId!: number | null;
-  private subscription!: Subscription;
+  clickedRecipe?: Recipe;
+  recipes: Observable<Recipe[]> = this.store.select(
+    (state) => state.recipes.recipes
+  );
+  recipeId!: number;
 
   constructor(
-    private recipeService: RecipeService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
     this.route.params.subscribe((param: Params) => {
-      this.recipeId = param['id'] ? +param['id'] : null;
+      this.recipeId = +param['id'];
       this.setClickedRecipe();
     });
   }
 
   setClickedRecipe() {
-    const recipes = this.recipeService.getRecipes();
-    if (recipes.length !== 0) {
-      this.clickedRecipe = this.recipeService.getRecipeById(this.recipeId! - 1);
-    } else {
-      this.subscription = this.recipeService.recipeChanged.subscribe(
-        (recipe) => {
-          if (recipe[this.recipeId! - 1])
-            this.clickedRecipe = this.recipeService.getRecipeById(
-              this.recipeId! - 1
-            );
-          else this.router.navigate(['recipes']);
-        }
-      );
-    }
+    this.store
+      .select((state) => state.recipes.recipes)
+      .subscribe((recipes) => {
+        this.clickedRecipe = recipes[this.recipeId! - 1];
+      });
   }
 
   updateIngredient() {
-    this.recipeService.updateIngredients(
-      this.clickedRecipe.ingredients.map((ing) => {
-        return new Ingredient(ing.name, ing.amount);
+    this.store.dispatch(
+      updateIngredient({
+        recipeIng: this.clickedRecipe!.ingredients.map((ing) => {
+          return new Ingredient(ing.name, ing.amount);
+        }),
       })
     );
   }
@@ -62,7 +59,7 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteRecipe() {
-    this.recipeService.deleteRecipe(this.recipeId! - 1);
+    this.store.dispatch(deleteRecipe({ recipeId: this.recipeId! - 1 }));
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 

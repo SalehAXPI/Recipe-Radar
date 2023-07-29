@@ -10,7 +10,7 @@ export const startLogin = createAction(
 
 export const login = createAction(
   '[Auth] Login',
-  props<userResponseNeededData>()
+  props<{ user: userResponseNeededData; autoLogged: boolean }>()
 );
 
 export const loginError = createAction(

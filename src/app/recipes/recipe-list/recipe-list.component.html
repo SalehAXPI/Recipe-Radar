@@ -9,7 +9,7 @@
 <div class="row">
   <div class="list-group px-2">
     <app-recipe-item
-      *ngFor="let recipe of recipes; let i = index"
+      *ngFor="let recipe of recipes | async; let i = index"
       [recipeId]="i"
       [recipe]="recipe"
     ></app-recipe-item>

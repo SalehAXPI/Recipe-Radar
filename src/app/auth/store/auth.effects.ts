@@ -8,7 +8,6 @@ import {
   loginError,
   logout,
   signInDone,
-  signup,
   startAuth,
   startLogin,
   startSignup,
@@ -23,7 +22,6 @@ import {
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { Router } from '@angular/router';
-import { RecipeService } from '../../recipes/recipe.service';
 import { LoadingService } from '../../shared/loading.service';
 
 @Injectable()
@@ -46,76 +44,59 @@ export class AuthEffects {
         this.clearLogOutTimer();
         this.setLogOutTimer(exp.getTime() - new Date().getTime());
 
-        const loadedUser = new User(
+        const user = new User(
           parsedUserData.email,
           parsedUserData.id,
           parsedUserData._token,
           exp
         );
 
-        if (loadedUser.token) return of(login(loadedUser));
+        if (user.token) return of(login({ user, autoLogged: true }));
         else return of(logout({}));
       })
     )
   );
-  loginEffect = createEffect(() =>
+  loginOrSignupEffect = createEffect(() =>
     this.actions$.pipe(
-      ofType(startLogin),
-      switchMap(({ email, password }) => {
+      ofType(startLogin, startSignup),
+      switchMap(({ email, password, type }) => {
         if (!email && !password) return of();
-        return this.http
-          .post<LoginUserResponse>(this.LOGIN_API_URL, {
+
+        const apiUrl = this.getLoginOrSignupApiUrl(type);
+        const request$ = this.http.post<LoginUserResponse | SignupUserResponse>(
+          apiUrl,
+          {
             email,
             password,
             returnSecureToken: true,
-          })
-          .pipe(
-            map((responseData) =>
-              login(this.createUserAndStoreInLocalStorage(responseData))
-            ),
-            catchError((errorRes: HttpErrorResponse) => {
-              return of(
-                loginError({
-                  errorMessage: this.getErrorMessage(
-                    errorRes.error.error.message
-                  ),
-                })
-              );
-            })
-          );
+          }
+        );
+
+        return request$.pipe(
+          map((responseData) =>
+            this.createUserAndStoreInLocalStorage(responseData)
+          ),
+          map((user) => login({ user, autoLogged: false })),
+          catchError((errorRes: HttpErrorResponse) =>
+            of(
+              loginError({
+                errorMessage: this.getErrorMessage(
+                  errorRes.error.error.message
+                ),
+              })
+            )
+          )
+        );
       })
     )
   );
 
-  signupEffect = createEffect(() =>
-    this.actions$.pipe(
-      ofType(startSignup),
-      switchMap(({ email, password }) => {
-        if (!email && !password) return of();
+  private getLoginOrSignupApiUrl(type: string): string {
+    return type === '[Auth] Start Login'
+      ? this.LOGIN_API_URL
+      : this.SIGNUP_API_URL;
+  }
 
-        return this.http
-          .post<SignupUserResponse>(this.SIGNUP_API_URL, {
-            email,
-            password,
-            returnSecureToken: true,
-          })
-          .pipe(
-            map((responseData) =>
-              signup(this.createUserAndStoreInLocalStorage(responseData))
-            ),
-            catchError((errorRes: HttpErrorResponse) => {
-              return of(
-                loginError({
-                  errorMessage: this.getErrorMessage(
-                    errorRes.error.error.message
-                  ),
-                })
-              );
-            })
-          );
-      })
-    )
-  );
   logoutEffect = createEffect(
     () =>
       this.actions$.pipe(
@@ -123,9 +104,8 @@ export class AuthEffects {
         tap(({ reason }) => {
           this.clearLogOutTimer();
           this.router.navigate(['auth']);
-          this.loadingService.error.next(reason);
           localStorage.removeItem('userData');
-          this.recipeService.onLogout();
+          if (reason) this.loadingService.error.next(reason);
         })
       ),
     { dispatch: false }
@@ -150,12 +130,6 @@ export class AuthEffects {
     )
   );
 
-  signupReflect = createEffect(() =>
-    this.actions$.pipe(
-      ofType(signup),
-      switchMap(() => of(signInDone()))
-    )
-  );
   logInErrorReflect = createEffect(() =>
     this.actions$.pipe(
       ofType(loginError),
@@ -169,12 +143,13 @@ export class AuthEffects {
         ofType(signInDone),
         withLatestFrom(this.store.select('auth')),
         switchMap(([_, action]) => {
-          if (action.user) this.router.navigate(['/recipes']);
-
           if (action.authError) {
             this.loadingService.isFetching.next(false);
             this.loadingService.error.next(action.authError);
           }
+
+          if (!action.autoLogged) this.router.navigate(['/recipes']);
+
           return of();
         })
       ),
@@ -188,7 +163,6 @@ export class AuthEffects {
     private store: Store<AppState>,
     private http: HttpClient,
     private router: Router,
-    private recipeService: RecipeService,
     private loadingService: LoadingService
   ) {}
 
@@ -217,6 +191,7 @@ export class AuthEffects {
       new Date().getTime() + +responseData.expiresIn * 1000
     );
 
+    this.clearLogOutTimer();
     this.setLogOutTimer(expirationDate.getTime() - new Date().getTime());
 
     const user = new User(

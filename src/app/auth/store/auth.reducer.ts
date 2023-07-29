@@ -5,7 +5,6 @@ import {
   login,
   loginError,
   logout,
-  signup,
   startLogin,
   startSignup,
   switchAuthMode,
@@ -15,20 +14,28 @@ export interface AuthState {
   user: User | undefined;
   form: { authMode: 'signup' | 'login'; isFormValid: boolean };
   authError: string | undefined;
+  autoLogged: boolean;
 }
 
 const initialState: AuthState = {
   user: undefined,
   form: { authMode: 'login', isFormValid: true },
   authError: undefined,
+  autoLogged: false,
 };
 
 export const authReducer = createReducer(
   initialState,
-  on(login, (state, { email, id, _token, _tokenExpirationDate }) => {
+  on(login, (state, action) => {
     return {
       ...state,
-      user: new User(email, id, _token, _tokenExpirationDate),
+      user: new User(
+        action.user.email,
+        action.user.id,
+        action.user._token,
+        action.user._tokenExpirationDate
+      ),
+      autoLogged: action.autoLogged,
       authError: undefined,
     };
   }),
@@ -37,14 +44,6 @@ export const authReducer = createReducer(
   }),
   on(startSignup, (state) => {
     return { ...state, authError: undefined };
-  }),
-  on(signup, (state, action) => {
-    const { email, id, _token, _tokenExpirationDate } = action;
-    return {
-      ...state,
-      user: new User(email, id, _token, _tokenExpirationDate),
-      authError: undefined,
-    };
   }),
   on(logout, (state) => {
     return { ...state, user: undefined, authError: undefined };

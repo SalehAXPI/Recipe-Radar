@@ -22,14 +22,10 @@ textarea.ng-invalid.ng-dirty {
   right: 0
 }
 
-a {
-  cursor: pointer;
-}
 
 .button-group-custom {
   @extend .gap-1;
   display: flex;
-
 }
 
 .custom-image {
@@ -44,4 +40,8 @@ a {
   right: 50%;
   transform: translateX(-50%);
   top: 10px;
+}
+
+a {
+  cursor: pointer !important;
 }

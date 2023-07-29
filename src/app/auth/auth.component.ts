@@ -6,7 +6,6 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FirstLetterUppercasePipe } from './first-letter-uppercase.pipe';
 import { Store } from '@ngrx/store';
@@ -28,7 +27,6 @@ export class AuthComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private loadingService: LoadingService,
-    private router: Router,
     private store: Store<AppState>
   ) {}
 

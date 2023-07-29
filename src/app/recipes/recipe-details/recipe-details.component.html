@@ -1,43 +1,50 @@
-<div class="row">
-  <div class="text-center">
-    <img
-      [alt]="clickedRecipe.name"
-      [src]="clickedRecipe.imgPath"
-      class="custom-image"
-    />
+<div *ngIf="clickedRecipe;else recipeError">
+  <div class="row">
+    <div class="text-center">
+      <img
+        [alt]="clickedRecipe.name"
+        [src]="clickedRecipe.imgPath"
+        class="custom-image"
+      />
+    </div>
   </div>
-</div>
-<div class="row">
-  <div>
-    <h1 class="h1">{{ clickedRecipe.name }}</h1>
+  <div class="row">
+    <div>
+      <h1 class="h1">{{ clickedRecipe.name }}</h1>
+    </div>
   </div>
-</div>
-<button appDropdown class="btn btn-primary dropdown-toggle" type="button">
-  Manage recipe
-</button>
-<ul class="dropdown-menu" style="margin-top: 7px">
-  <li>
-    <a (click)="updateIngredient()" class="dropdown-item"
+  <button appDropdown class="btn btn-primary dropdown-toggle" type="button">
+    Manage recipe
+  </button>
+  <ul class="dropdown-menu" style="margin-top: 7px">
+    <li>
+      <a (click)="updateIngredient()" class="dropdown-item"
       >Add Ingredients to Shopping List</a
-    >
-  </li>
-  <li><a (click)="onEditRecipe()" class="dropdown-item">Edit Recipe</a></li>
-  <li><a (click)="onDeleteRecipe()" class="dropdown-item">Delete Recipe</a></li>
-</ul>
-
-<div class="row">
-  <div>{{ clickedRecipe.desc }}</div>
-</div>
-
-<div class="row">
-  <div>
-    <ul class="list-group">
-      <li
-        *ngFor="let ingredient of clickedRecipe.ingredients"
-        class="list-group-item"
       >
-        {{ ingredient.name }} | {{ ingredient.amount }}
-      </li>
-    </ul>
+    </li>
+    <li><a (click)="onEditRecipe()" class="dropdown-item">Edit Recipe</a></li>
+    <li>
+      <a (click)="onDeleteRecipe()" class="dropdown-item">Delete Recipe</a>
+    </li>
+  </ul>
+
+  <div class="row">
+    <div>{{ clickedRecipe.desc }}</div>
+  </div>
+
+  <div class="row">
+    <div>
+      <ul class="list-group">
+        <li
+          *ngFor="let ingredient of clickedRecipe.ingredients"
+          class="list-group-item"
+        >
+          {{ ingredient.name }} | {{ ingredient.amount }}
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
+<ng-template #recipeError>
+  <div class="alert alert-danger">There is no Recipe With this ID!</div>
+</ng-template>

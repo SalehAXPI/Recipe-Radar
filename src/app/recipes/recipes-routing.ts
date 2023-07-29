@@ -21,12 +21,10 @@ export const RecipesRouting: Routes = [
       {
         path: ':id',
         component: RecipeDetailsComponent,
-        resolve: [productResolver],
       },
       {
         path: ':id/edit',
         component: RecipeEditComponent,
-        resolve: [productResolver],
       },
       { path: '**', redirectTo: '/recipes' },
     ],

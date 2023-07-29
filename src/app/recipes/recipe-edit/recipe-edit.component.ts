@@ -7,8 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RecipeService } from '../recipe.service';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/app.reducer';
+import { Recipe } from '../recipe.model';
+import { addRecipe, updateRecipe } from '../store/recipe.actions';
 
 @Component({
   standalone: true,
@@ -26,7 +29,7 @@ export class RecipeEditComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private router: Router,
-    private recipeService: RecipeService
+    private store: Store<AppState>
   ) {}
 
   get ingControls() {
@@ -35,13 +38,6 @@ export class RecipeEditComponent implements OnInit {
 
   ngOnInit() {
     this.initializeForm();
-    if (this.recipeService.getRecipes().length !== 0) {
-      this.subscribeToRouteParams();
-    } else {
-      this.recipeService.recipeChanged.subscribe(() => {
-        this.subscribeToRouteParams();
-      });
-    }
   }
 
   onAddIngredient() {
@@ -54,9 +50,11 @@ export class RecipeEditComponent implements OnInit {
 
     const recipeFormValue = this.editForm.value;
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id! - 1, recipeFormValue);
+      this.store.dispatch(
+        updateRecipe({ index: this.id! - 1, updatedRecipe: recipeFormValue })
+      );
     } else {
-      this.recipeService.addRecipe(recipeFormValue);
+      this.store.dispatch(addRecipe({ recipeToAdd: recipeFormValue }));
     }
 
     this.navigateBack();
@@ -92,10 +90,17 @@ export class RecipeEditComponent implements OnInit {
   }
 
   private fillFormInputs() {
-    const recipeSelected = this.recipeService.getRecipeById(this.id! - 1);
+    let recipeSelected: Recipe;
+    this.store
+      .select((state) => state.recipes.recipes)
+      .subscribe((recipes) => {
+        recipeSelected = recipes[this.id! - 1];
+      });
+    if (!recipeSelected!) return;
+
     this.editForm.patchValue(recipeSelected);
 
-    const ingredientsArray = recipeSelected?.ingredients || [];
+    const ingredientsArray = recipeSelected.ingredients || [];
     const formIngredientsArray = this.editForm.get('ingredients') as FormArray;
     formIngredientsArray.clear();
 
