@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
 import { LoadingComponent } from './shared/loading/loading.component';
 import { AlertComponent } from './shared/alert/alert.component';
@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AppState } from './store/app.reducer';
 import { Store } from '@ngrx/store';
 import { initLogin } from './auth/store/auth.actions';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -15,9 +16,12 @@ import { initLogin } from './auth/store/auth.actions';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(private store: Store<AppState>) {}
+  constructor(
+    private store: Store<AppState>,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit() {
-    // this.store.dispatch(initLogin());
+    if (isPlatformBrowser(this.platformId)) this.store.dispatch(initLogin());
   }
 }

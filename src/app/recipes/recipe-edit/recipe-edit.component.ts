@@ -24,7 +24,7 @@ export class RecipeEditComponent implements OnInit {
   editForm!: FormGroup;
   editMode: boolean = false;
   private id!: number | null;
-  recipeSelected: Recipe | undefined;
+  recipeSelected: (Recipe | undefined) | null;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,7 +44,9 @@ export class RecipeEditComponent implements OnInit {
         this.editMode = true;
         this.fillFormInputs();
       } else {
+        this.recipeSelected = null;
         this.editMode = false;
+        debugger;
         this.initializeForm();
       }
     });
@@ -95,8 +97,9 @@ export class RecipeEditComponent implements OnInit {
     this.store
       .select((state) => state.recipes.recipes)
       .subscribe((recipes) => {
+        if (!recipes[this.id! - 1]) return;
+
         this.recipeSelected = recipes[this.id! - 1];
-        if (!this.recipeSelected) return;
 
         this.initializeForm();
         this.editForm.patchValue(this.recipeSelected);
