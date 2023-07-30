@@ -18,6 +18,6 @@ export class AppComponent implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit() {
-    this.store.dispatch(initLogin());
+    // this.store.dispatch(initLogin());
   }
 }

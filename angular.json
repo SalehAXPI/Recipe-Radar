@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/recipe-radar",
+            "outputPath": "dist/recipeRadar/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -103,6 +103,67 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/recipeRadar/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "inlineStyleLanguage": "scss"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "recipeRadar:build:development",
+              "serverTarget": "recipeRadar:server:development"
+            },
+            "production": {
+              "browserTarget": "recipeRadar:build:production",
+              "serverTarget": "recipeRadar:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "recipeRadar:build:production",
+              "serverTarget": "recipeRadar:server:production"
+            },
+            "development": {
+              "browserTarget": "recipeRadar:build:development",
+              "serverTarget": "recipeRadar:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
