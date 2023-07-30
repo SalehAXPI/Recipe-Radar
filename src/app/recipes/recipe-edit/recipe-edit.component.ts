@@ -46,7 +46,6 @@ export class RecipeEditComponent implements OnInit {
       } else {
         this.recipeSelected = null;
         this.editMode = false;
-        debugger;
         this.initializeForm();
       }
     });

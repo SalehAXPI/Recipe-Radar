@@ -24,7 +24,6 @@ export const recipeReducer = createReducer(
     };
   }),
   on(updateRecipe, (state, action) => {
-    debugger;
     return {
       ...state,
       recipes: [

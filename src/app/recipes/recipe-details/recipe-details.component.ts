@@ -54,7 +54,6 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       addRecipeIngredients({
         recipeIng: this.clickedRecipe!.ingredients.map((ing) => {
-          debugger;
           return new Ingredient(ing.name, ing.amount);
         }),
       })
