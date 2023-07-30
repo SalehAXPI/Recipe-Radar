@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import {
   FormArray,
@@ -12,7 +12,6 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.reducer';
 import { addRecipe, updateRecipe } from '../store/recipe.actions';
 import { Recipe } from '../recipe.model';
-import { LoadingService } from '../../shared/loading.service';
 
 @Component({
   standalone: true,
@@ -21,7 +20,7 @@ import { LoadingService } from '../../shared/loading.service';
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.scss'],
 })
-export class RecipeEditComponent implements OnInit, OnDestroy {
+export class RecipeEditComponent implements OnInit {
   editForm!: FormGroup;
   editMode: boolean = false;
   private id!: number | null;
@@ -31,8 +30,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private router: Router,
-    private store: Store<AppState>,
-    private loadingService: LoadingService
+    private store: Store<AppState>
   ) {}
 
   get ingControls() {
@@ -47,12 +45,9 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
         this.fillFormInputs();
       } else {
         this.editMode = false;
+        this.initializeForm();
       }
     });
-  }
-
-  ngOnDestroy() {
-    this.loadingService.error.next(undefined);
   }
 
   onAddIngredient() {

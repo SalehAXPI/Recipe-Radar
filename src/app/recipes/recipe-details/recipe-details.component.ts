@@ -18,7 +18,7 @@ import { LoadingService } from '../../shared/loading.service';
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit, OnDestroy {
-  clickedRecipe?: Recipe;
+  clickedRecipe!: Recipe;
   recipes: Observable<Recipe[]> = this.store.select(
     (state) => state.recipes.recipes
   );
@@ -54,6 +54,7 @@ export class RecipeDetailsComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       addRecipeIngredients({
         recipeIng: this.clickedRecipe!.ingredients.map((ing) => {
+          debugger;
           return new Ingredient(ing.name, ing.amount);
         }),
       })

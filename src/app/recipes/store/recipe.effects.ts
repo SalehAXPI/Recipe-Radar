@@ -10,6 +10,7 @@ export class RecipeEffects {
     this.action$.pipe(
       ofType(addRecipeIngredients),
       switchMap((action) => {
+        debugger;
         return of(addIngredient({ ingredients: action.recipeIng }));
       })
     )

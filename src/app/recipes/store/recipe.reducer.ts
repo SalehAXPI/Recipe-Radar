@@ -20,37 +20,32 @@ export const recipeReducer = createReducer(
   on(getAndUpdateRecipes, (state, action) => {
     return {
       ...state,
-      recipes: action.updatedRecipes.map((recipe) => {
-        return {
-          ...recipe,
-          ingredients: [...recipe.ingredients],
-        };
-      }),
+      recipes: action.updatedRecipes,
     };
   }),
-    on(updateRecipe, (state, action) => {
-      debugger;
-      return {
-        ...state,
-        recipes: [
-          ...state.recipes.slice(0, action.index), // Copy elements before the updated recipe
-          action.updatedRecipe, // Insert the updated recipe at the specified index
-          ...state.recipes.slice(action.index + 1), // Copy elements after the updated recipe
-        ],
-      };
-    }),
-    on(addRecipe, (state, action) => {
-      return {
-        ...state,
-        recipes: [...state.recipes, action.recipeToAdd],
-      };
-    }),
-    on(deleteRecipe, (state, action) => {
-      const stateArr = [...state.recipes];
-      stateArr.splice(action.recipeId, 1);
-      return {
-        ...state,
-        recipes: [...stateArr],
-      };
-    })
-)
+  on(updateRecipe, (state, action) => {
+    debugger;
+    return {
+      ...state,
+      recipes: [
+        ...state.recipes.slice(0, action.index), // Copy elements before the updated recipe
+        action.updatedRecipe, // Insert the updated recipe at the specified index
+        ...state.recipes.slice(action.index + 1), // Copy elements after the updated recipe
+      ],
+    };
+  }),
+  on(addRecipe, (state, action) => {
+    return {
+      ...state,
+      recipes: [...state.recipes, action.recipeToAdd],
+    };
+  }),
+  on(deleteRecipe, (state, action) => {
+    const stateArr = [...state.recipes];
+    stateArr.splice(action.recipeId, 1);
+    return {
+      ...state,
+      recipes: [...stateArr],
+    };
+  })
+);
